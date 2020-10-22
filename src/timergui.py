@@ -1,3 +1,4 @@
+#author Edwin Recinos
 import PySimpleGUI as sg
 
 sg.theme('DarkBlue2')
