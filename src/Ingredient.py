@@ -21,10 +21,9 @@ class Ingredient:
         
         self.unit = ""                                  # e.g. tablespoon, teaspoon, cup, etc.
     
-    def __init__(self, id, aisle, name, amount, unit):
+    def init(self, id, aisle, name, amount, unit):
     
-    # Constructor for when we already have info on the ingredient
-    # Used with the API since this information will be given
+    # Post API initializer
     
         self.id = id
         self.aisle = aisle
@@ -32,6 +31,14 @@ class Ingredient:
         self.amount = amount
         self.unit = unit
         
+    def init1(self, name, amount, unit):
+    
+    # Pre API initializer
+        
+        self.name = name
+        self.amount = amount
+        self.unit = unit
+    
     # Setter methods
     
     def setID(self, id):
