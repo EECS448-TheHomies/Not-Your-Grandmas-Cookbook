@@ -143,7 +143,6 @@ class Recipe:
     def removeStep(pos):
         self.instructions.delete(pos)
         
-    
-
+   
 
 
