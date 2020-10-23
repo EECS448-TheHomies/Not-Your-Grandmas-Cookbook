@@ -7,6 +7,7 @@
 # Each individual recipe object will have its own directory stored in the recipes directory of our project folder
 
 import os
+from Ingredient import Ingredient
 
 class Recipe:
     
@@ -130,9 +131,18 @@ class Recipe:
     def setInstructions(self, instructions):
         self.instructions = instructions
         
-    
-recipe = Recipe()
-recipe.init("Chocolate chip cookies", "1234", "25", "10", "recipes.com", "image.png", "Yummy cookies", ["flour", "sugar", "butter"], ["make dough", "bake cookies"])
-recipe.setTitle("cake")
+    def addIngredient(ingr):
+        self.ingredients.append(ingr)
+        
+    def removeIngredient(ingr):
+        self.ingredients.remove(ingr)
+        
+    def addStep(pos, step):
+        self.instructions.insert(pos, step)
+        
+    def removeStep(pos):
+        self.instructions.delete(pos)
+        
+   
 
 
