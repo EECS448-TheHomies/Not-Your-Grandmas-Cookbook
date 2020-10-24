@@ -16,7 +16,6 @@ class Recipe:
     
     # Constructor that creates an empty recipe
     
-        print("Creating Recipe...")
         self.parentDir = os.path.dirname(os.getcwd())           # e.g. C:\\Users\Username\ProgramFiles\Project3Folder
         self.recipeDir = self.parentDir + "/recipes/"           # e.g. C:\\Users\Username\ProgramFiles\Project3Folder\recipes
         self.path = ""                                          # e.g. C:\\Users\Username\ProgramFiles\Project3Folder\recipes\"cake recipe"
@@ -89,7 +88,7 @@ class Recipe:
                 break
             i = i+1
         
-    def init2(self, yml):
+    def init2(self, yml):                                                  # pass in the object that was read from the yaml file
         self.title = yml["title"]
         self.summary = yml["summary"]
         self.servings = yml["servings"]
