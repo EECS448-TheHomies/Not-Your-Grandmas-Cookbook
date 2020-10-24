@@ -1,3 +1,4 @@
+from tkinter.constants import TRUE
 import PySimpleGUI as sg
 import textwrap
 
@@ -39,7 +40,7 @@ class RecipeGui(object):
         longtext = """Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged."""
         # Defines the summary framed element
         summary_layout = [
-            [sg.Text('Summary', font=self.sectionFont)],
+            [sg.Text('Summary', font=self.sectionFont,enable_events=True)],
             [sg.T(textwrap.fill(longtext, self.width), font=self.bodyFont)],
             [sg.Text('_'*(self.width-18), font=self.bodyFont)]
         ]
@@ -63,18 +64,19 @@ class RecipeGui(object):
         ]
 
         # Defines the Ingredients framed element
-        list_col_instructions = []
-        for i in range(10):
-            name =" Step " + str(i) + ":"
+        list_col_instructions = [] # Holds the Instruction columns  
+        state_of_instructions = [] # If the text is hidden
+        for step in range(10):
+            name =" Step " + str(step) + ":"
             details = textwrap.fill(longtext, self.width)
 
-            list_col_instructions.append([sg.Column([ [sg.Button(SYMBOL_DOWN, key='--Step'+str(i)+'SYM--'), sg.Text(name, font=self.subSectionFont)], [
-                sg.Text(details, font=self.bodyFont,visible=False)]])])
+            # Appended the step to steps list
+            list_col_instructions.append([sg.Column([ [sg.Text(SYMBOL_UP, key='--Step:'+str(step)+':SYM--',enable_events=True), sg.Text(name, font=self.subSectionFont,enable_events=True,key='--Step:'+str(step)+':TITLE--')], [
+                sg.Text(details, font=self.bodyFont,visible=False, key='--Step:'+str(step)+':TEXT--')]])])
 
+            # set the default state to be hidden
+            state_of_instructions.append(False)
            
-
-            # tmp_layout = [[sg.Text("t", font=self.subSectionFont)]]]
-            # list_col_instructions.append(tmp_layout)
 
         instructions_layout = [
             [sg.Text('Instructions', font=self.sectionFont)]]
@@ -105,12 +107,35 @@ class RecipeGui(object):
         while True:
             event, values = window()
             window.Refresh()
-            print(values)
+            print(event)
 
             if event == sg.WIN_CLOSED or event == 'Close':  # if user closes window or clicks cancel
                 break
             elif event == 'New Timer':
                 print("Make a new Timer")
+
+
+            for step in range(len(list_col_instructions)):
+                if event == '--Step:'+str(step)+':SYM--' or event == '--Step:'+str(step)+':TITLE--':
+                   
+                    if state_of_instructions[step]:
+                        state_of_instructions[step] = False
+
+                        print("Hide Step " + str(step))
+                        window['--Step:'+str(step)+':SYM--'](SYMBOL_UP)
+                        window['--Step:'+str(step)+':TEXT--'](visible=False)
+                        window.Refresh()
+
+
+
+                    else:
+                        state_of_instructions[step] = True 
+                        print("Expand Step " + str(step))
+                        window['--Step:'+str(step)+':SYM--'](SYMBOL_DOWN)
+                        window['--Step:'+str(step)+':TEXT--'](visible=True)
+                        window.Refresh()
+
+
 
         window.close()
 
