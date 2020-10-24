@@ -8,6 +8,7 @@
 
 import os
 from Ingredient import Ingredient
+import yaml
 
 class Recipe:
     
@@ -26,7 +27,7 @@ class Recipe:
         self.URL = ""
         self.image = ""
         self.summary = ""
-        self.ingredients = []                                   # this will be a list of type ingredients
+        self.ingredients = []                                   # this will be a list of dictionaries that will contain details on the ingredients
         self.instructions = []                                  # this will be a list of strings
         
         i = 1
@@ -41,7 +42,7 @@ class Recipe:
                 break
             i = i+1
         
-    def init(self, title, id, time, servings, URL, image, summary, ingredients, instructions):
+    def init0(self, title, id, time, servings, URL, image, summary, ingredients, instructions):
     
     # initializer for when we know all elements of the recipe (post API)
     
@@ -87,6 +88,13 @@ class Recipe:
                 self.path = self.recipeDir + title + "(" + str(i) + ")"
                 break
             i = i+1
+        
+    def init2(self, yml):
+        self.title = yml["title"]
+        self.summary = yml["summary"]
+        self.servings = yml["servings"]
+        self.ingredients = yml["ingredients"]                              # a dictionary with the indexes of "name", "amount", & "unit"
+        self.instructions = yml["instructions"]                            # a list of strings, each index is a separate step
         
     # Setter methods to assign values to member variables after construction
     
