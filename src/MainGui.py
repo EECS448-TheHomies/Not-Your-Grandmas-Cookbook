@@ -6,10 +6,21 @@ import os
 from PySimpleGUI.PySimpleGUI import theme_element_background_color
 
 
-class classname(object):
+class MainGUI(object):
     """
     docstring
     """
+
+    def __init__(self, theme):
+        """Sets up the options for the GUI
+        docstring
+        """
+        # Theme
+        sg.theme(theme)
+
+        # This prints the debug prints to a window
+        sg.Print(do_not_reroute_stdout=False)
+
 
     # Make a list of the names of the recipes
     def getRecipeNameList(self, filter:str, Recipes:list) -> list:
@@ -26,21 +37,11 @@ class classname(object):
         """
         namesOfRecipes = []
         
-        for recipe in listOfRecipes:
+        for recipe in self.listOfRecipes:
             if filter == '' or filter in recipe['name']:
                 namesOfRecipes.append(recipe['name'])
 
         return namesOfRecipes
-
-    def set_gui_options(self, theme:str):
-        """
-        docstring
-        """
-        # Theme
-        sg.theme(theme)
-
-        # This prints the debug prints to a window
-        sg.Print(do_not_reroute_stdout=False)
 
 
     def makeMainWindow(self):
@@ -52,7 +53,7 @@ class classname(object):
         # get the recipes
         self.listOfRecipes = [{'name':'r1 meat'},{'name':'r2 cheese'}]
 
-        namesOfRecipes = getRecipeNameList('', listOfRecipes)
+        namesOfRecipes = self.getRecipeNameList('', self.listOfRecipes)
 
         # Make the recipe list element
         self.elmRecipe = sg.Listbox(values=namesOfRecipes, size=(60, 10), enable_events=True, key='-recSelect-')
@@ -73,49 +74,58 @@ class classname(object):
         # create the "Window"
         self.window = sg.Window('Window Title', layout,finalize=True)
 
-    
+        while True:
+            event, values = self.window()
+            self.window.Refresh() 
+            print(values)
+
+            if event == sg.WIN_CLOSED or event == 'Exit': # if user closes window or clicks cancel
+                break
+            elif event == 'Search':
+                # window['-OUTPUT-'].update(values['-resSearch-'])
+                filtered_recipes = self.getRecipeNameList(values['-recSearch-'],self.listOfRecipes)
+                print(filtered_recipes)
+                self.elmRecipe( filtered_recipes)
+
+            elif event == 'Open':
+                self.output(values['-recSelect-'])
+                pass
+
+        self.window.close()
+
+
+    def runEventLoop(self):
+        """
+        docstring
+        """
+        # Event loop
+        while True:
+            event, values = self.window()
+            self.window.Refresh() 
+            print(values)
+
+            if event == sg.WIN_CLOSED or event == 'Exit': # if user closes window or clicks cancel
+                break
+            elif event == 'Search':
+                # window['-OUTPUT-'].update(values['-resSearch-'])
+                filtered_recipes = self.getRecipeNameList(values['-recSearch-'],self.listOfRecipes)
+                print(filtered_recipes)
+                self.elmRecipe( filtered_recipes)
+
+            elif event == 'Open':
+                self.output(values['-recSelect-'])
+                pass
+
+        self.window.close()
 
 
 
+winGUI = MainGUI('LightGrey1')
+
+winGUI.makeMainWindow()
+# winGUI.runEventLoop()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Event loop
-while True:
-    event, values = window()
-    window.Refresh() 
-    print(values)
-
-    if event == sg.WIN_CLOSED or event == 'Exit': # if user closes window or clicks cancel
-        break
-    elif event == 'Search':
-        # window['-OUTPUT-'].update(values['-resSearch-'])
-        filtered_recipes = getRecipeNameList(values['-recSearch-'],listOfRecipes)
-        print(filtered_recipes)
-        elmRecipe( filtered_recipes)
-
-    elif event == 'Open':
-        output(values['-recSelect-'])
-        pass
-
-
-
-
-window.close()
 
 
 
