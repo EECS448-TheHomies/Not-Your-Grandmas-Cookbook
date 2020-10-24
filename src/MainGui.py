@@ -1,10 +1,6 @@
-from math import e
 import PySimpleGUI as sg
-import datetime
-import os
 
-from PySimpleGUI.PySimpleGUI import theme_element_background_color
-
+from RecipeGui import RecipeGui
 
 class MainGUI(object):
     """
@@ -15,11 +11,19 @@ class MainGUI(object):
         """Sets up the options for the GUI
         docstring
         """
-        # Theme
-        sg.theme(theme)
+
+        self.setGUITheme(theme)
 
         # This prints the debug prints to a window
         sg.Print(do_not_reroute_stdout=False)
+
+    def setGUITheme(self,theme):
+        """Set the GUI theme
+        """
+        self.theme = theme
+
+        # Theme
+        sg.theme(theme)
 
 
     # Make a list of the names of the recipes
@@ -44,11 +48,10 @@ class MainGUI(object):
         return namesOfRecipes
 
 
-    def makeMainWindow(self):
+    def run(self):
         """
         docstring
         """
-        st ='Light grey 1'
 
         # get the recipes
         self.listOfRecipes = [{'name':'r1 meat'},{'name':'r2 cheese'}]
@@ -89,41 +92,21 @@ class MainGUI(object):
 
             elif event == 'Open':
                 self.output(values['-recSelect-'])
+                newGUI = RecipeGui(self.theme)
+                newGUI.run()
+
                 pass
 
         self.window.close()
 
 
-    def runEventLoop(self):
-        """
-        docstring
-        """
-        # Event loop
-        while True:
-            event, values = self.window()
-            self.window.Refresh() 
-            print(values)
-
-            if event == sg.WIN_CLOSED or event == 'Exit': # if user closes window or clicks cancel
-                break
-            elif event == 'Search':
-                # window['-OUTPUT-'].update(values['-resSearch-'])
-                filtered_recipes = self.getRecipeNameList(values['-recSearch-'],self.listOfRecipes)
-                print(filtered_recipes)
-                self.elmRecipe( filtered_recipes)
-
-            elif event == 'Open':
-                self.output(values['-recSelect-'])
-                pass
-
-        self.window.close()
+    
 
 
 
 winGUI = MainGUI('LightGrey1')
 
-winGUI.makeMainWindow()
-# winGUI.runEventLoop()
+winGUI.run()
 
 
 
