@@ -7,13 +7,13 @@ from Recipe import Recipe
 
 
 class MainGUI(object):
-    """
-    docstring
+    """MainGUI Does what it says, it's the main graphic user interface that users use when interacting with the program
+    
     """
 
     def __init__(self, theme):
         """Sets up the options for the GUI
-        docstring
+        
         """
 
         self.setGUITheme(theme)
@@ -58,8 +58,7 @@ class MainGUI(object):
         return namesOfRecipes
 
     def run(self):
-        """
-        docstring
+        """Method that runs the gui
         """
 
         # get the recipes
@@ -88,6 +87,14 @@ class MainGUI(object):
         self.window = sg.Window('CookBook', layout, finalize=True)
 
         while True:
+            """While loop run will check for events
+
+                Actions:
+                    While Loop: runs until break is detected which is if window is closed or the event hits Exit
+                            event in Exit or user closes window then break
+                            event in Search, it will search for a recipe list
+                            event in Open, opens said recipe list
+            """
             event, values = self.window()
             self.window.Refresh()
             print(values)
