@@ -11,7 +11,7 @@ class RecipeGui(object):
     docstring
     """
 
-    def __init__(self, theme):
+    def __init__(self, theme:str, recipeOBJ: Recipe ):
         """Sets up the options for the GUI
         docstring
         """
@@ -22,6 +22,9 @@ class RecipeGui(object):
         self.width = 125
 
         self.theme = theme
+
+        self.recipe = recipeOBJ
+
 
         # Theme
         sg.theme(theme)
