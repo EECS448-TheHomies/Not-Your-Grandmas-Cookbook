@@ -2,6 +2,7 @@
 import PySimpleGUI as sg
 
 sg.theme('DarkBlue2')
+sg.Print(do_not_reroute_stdout=False)
 
 layout = [  
             [  sg.Text('Food timer:', font=('Arial', 20)) ],                
@@ -69,6 +70,7 @@ while True:
     if timr == True:
         window['OUTPUT1'].update('{:02d}:{:02d}.{:02d}'.format((count // 100) // 60, (count // 100) % 60, count % 100))
         count = count+1
+        print(count)
 
 
 window.close()

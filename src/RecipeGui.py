@@ -1,6 +1,7 @@
 from tkinter.constants import TRUE
 import PySimpleGUI as sg
 import textwrap
+from datetime import datetime, timedelta 
 
 from PySimpleGUI.PySimpleGUI import TabGroup
 from Recipe import Recipe
@@ -11,7 +12,7 @@ class RecipeGui(object):
     docstring
     """
 
-    def __init__(self, theme:str, recipeOBJ: Recipe ):
+    def __init__(self, theme: str, recipeOBJ: Recipe):
         """Sets up the options for the GUI
         docstring
         """
@@ -25,13 +26,11 @@ class RecipeGui(object):
 
         self.recipe = recipeOBJ
 
-
         # Theme
         sg.theme(theme)
 
         # This prints the debug prints to a window
         sg.Print(do_not_reroute_stdout=False)
-
 
     def collapse(self, layout, key):
         """
@@ -43,11 +42,10 @@ class RecipeGui(object):
         """
         return sg.pin(sg.Column(layout, key=key, visible=False))
 
-    def make_rec_gui(self):
+    def make_rec_gui(self) -> sg.Window:
         SYMBOL_UP = '▲'
         SYMBOL_DOWN = '▼'
 
-        
         longtext = """Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged."""
         # Defines the summary framed element
         summary_layout = [
@@ -90,7 +88,8 @@ class RecipeGui(object):
                 details, font=self.bodyFont)
 
             # Appended the step to steps list
-            self.list_col_instructions.append([[elm_state, elm_name], [self.collapse([[elm_details]], '--Step:'+str(step)+':TEXT--') ]] )
+            self.list_col_instructions.append([[elm_state, elm_name], [
+                                              self.collapse([[elm_details]], '--Step:'+str(step)+':TEXT--')]])
 
             # set the default state to be hidden
             self.state_of_instructions.append(False)
@@ -112,7 +111,7 @@ class RecipeGui(object):
         # ]
 
         # This defines the layout of the main window
-        layout = [[sg.Text('Recipe')], [sg.Button('New Timer')]]
+        layout = [[sg.Text('Recipe')]]
         layout += summary_layout
         layout += ingredients_layout
         layout += instructions_layout
@@ -121,21 +120,27 @@ class RecipeGui(object):
         # create the "Window"
         return sg.Window('Window Title', layout, finalize=True)
 
-    def make_timer_gui(self):
-        layout = [  
-            [  sg.Text('Food timer:', font=('Arial', 20)) ],                
-            [  sg.Text( font=('Arial', 45), size=(10,1), key='OUTPUT1', justification = 'center') ],
- #         [   sg.Text('Food being cooked: '), sg.Output()],
- #           [  sg.Text('Type something in'), sg.Input()  ], 
-            [  sg.Button('Start'),  sg.Button('Pause'), sg.Button('Exit'), sg.Button('Add 15mins'), 
-            sg.Button('Subtract 15mins')]  ]                           
-
-        self.time_count=0
-        self.time_timr= True
+    def make_timer_gui(self) -> sg.Window:
+        layout = [
+            [sg.Text('Food timer:', font=('Arial', 20))],
+            [sg.Text(font=('Arial', 45), size=(10, 1),
+                     key='--time--', justification='center')],
+            [sg.Button("+5 min"), sg.Button("+1 min"), sg.Button("+30 sec"), sg.VerticalSeparator() ,sg.Button("-5 min"), sg.Button("-1 min"), sg.Button("-30 sec")],
+            [sg.Button('Start'),  sg.Button('Pause')]
+        ]
+       
+        self.time_count = datetime.now() + timedelta(minutes=5)
+        self.time_timr = True
         return sg.Window('FOOD TIME!', layout, finalize=True)
-        
 
-
+    def format_time(self, seconds:int)->str:
+        """
+        docstring
+        """
+        t_m, t_s = divmod(seconds, 60)
+        t_h, t_m = divmod(t_m, 60)
+        time_formated = str(t_h)+":"+str(t_m)+":"+str(t_s)
+        return time_formated
 
     def run(self):
         """ Runs the GUI
@@ -145,13 +150,14 @@ class RecipeGui(object):
         SYMBOL_UP = '▲'
         SYMBOL_DOWN = '▼'
 
-        rec_window = self.make_rec_gui()
         time_window = self.make_timer_gui()
+        rec_window = self.make_rec_gui()
 
         while True:
-            window, event, values = sg.read_all_windows()
-            window.Refresh()
+            event, values = rec_window.read(timeout=100)
+            tw_event, tw_values = time_window.Read(timeout=100)
             print(event)
+
 
             if event == sg.WIN_CLOSED or event == 'Close':  # if user closes window or clicks cancel
                 break
@@ -165,41 +171,73 @@ class RecipeGui(object):
                         self.state_of_instructions[step] = False
 
                         print("Hide Step " + str(step))
-                        window['--Step:'+str(step)+':SYM--'](SYMBOL_UP)
-                        window['--Step:'+str(step)+':TEXT--'](visible=False)
-                        window.Refresh()
+                        rec_window['--Step:'+str(step)+':SYM--'](SYMBOL_UP)
+                        rec_window['--Step:'+str(step)+':TEXT--'](visible=False)
+                        rec_window.Refresh()
 
                     else:
                         self.state_of_instructions[step] = True
                         print("Expand Step " + str(step))
-                        window['--Step:'+str(step)+':SYM--'](SYMBOL_DOWN)
-                        window['--Step:'+str(step)+':TEXT--'](visible=True)
-                        window.Refresh()
+                        rec_window['--Step:'+str(step)+':SYM--'](SYMBOL_DOWN)
+                        rec_window['--Step:'+str(step)+':TEXT--'](visible=True)
+                        rec_window.Refresh()
 
-            if event in ('Start'):
+            if tw_event == 'Start':
                 self.time_timr = True
+                self.time_count = datetime.now() + self.timeLeft
 
+            elif tw_event == 'Pause':
+                self.time_timr = False
+                
+                print(self.timeLeft)
+
+
+
+            if  self.time_timr == True:         
+                if tw_event == '+5 min':
+                    self.time_count += timedelta(minutes=5)
+
+                elif tw_event == '+1 min':
+                    self.time_count += timedelta(minutes=1)
+
+                elif tw_event == '+30 sec':
+                    self.time_count +=  timedelta(seconds=30)
+
+                elif tw_event == '-5 min':
+                    self.time_count -=  timedelta(minutes=5)
+
+                elif tw_event == '-1 min':
+                    self.time_count -=  timedelta(minutes=1)
+
+                elif tw_event == '-30 sec':
+                    self.time_count -= timedelta(seconds=30)
+
+
+                self.timeLeft = self.time_count - datetime.now()
+                time_formated = self.format_time(self.timeLeft.seconds)
+                time_window['--time--'](time_formated)
             
-            elif event in ('Pause'):
-                self.time_timr= False
 
+                print(self.time_count - datetime.now())
+            else:
+                if tw_event == '+5 min':
+                    self.timeLeft += timedelta(minutes=5)
 
-            elif event in ('Add 15mins'):
-                if self.time_timr==False:
-                    self.time_count=self.time_count+1500
-                    window['OUTPUT1'].update('{:02d}:{:02d}.{:02d}'.format((self.time_count // 100) // 60, (self.time_count // 100) % 60, self.time_count % 100))
-                    
+                elif tw_event == '+1 min':
+                    self.timeLeft += timedelta(minutes=1)
+
+                elif tw_event == '+30 sec':
+                    self.timeLeft +=  timedelta(seconds=30)
+
+                elif tw_event == '-5 min':
+                    self.timeLeft -=  timedelta(minutes=5)
+
+                elif tw_event == '-1 min':
+                    self.timeLeft -=  timedelta(minutes=1)
+
+                elif tw_event == '-30 sec':
+                    self.timeLeft -= timedelta(seconds=30)
             
-            elif event in ('Subtract 15mins'):
-                if self.time_timr == False:
-                    self.time_count=self.time_count-1500
-                    window['OUTPUT1'].update('{:02d}:{:02d}.{:02d}'.format((self.time_count // 100) // 60, (self.time_count // 100) % 60, self.time_count % 100))
-                    
-
-            if self.time_timr == True:
-                window['OUTPUT1'].update('{:02d}:{:02d}.{:02d}'.format((self.time_count // 100) // 60, (self.time_count // 100) % 60, self.time_count % 100))
-                self.time_count = self.time_count+1
-
+                time_formated = self.format_time(self.timeLeft.seconds)
+                time_window['--time--'](time_formated)
         window.close()
-
-
