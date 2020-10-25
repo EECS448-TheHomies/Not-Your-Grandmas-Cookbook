@@ -88,12 +88,27 @@ class Recipe:
                 break
             i = i+1
         
-    def init2(self, yml):                                                  # pass in the object that was read from the yaml file
+    def init2(self, yml):                                                  
+    
+    # Initializer that takes a yaml object
+    # pass in the object that was read from the yaml file
+    
         self.title = yml["title"]
         self.summary = yml["summary"]
         self.servings = yml["servings"]
         self.ingredients = yml["ingredients"]                              # a dictionary with the indexes of "name", "amount", & "unit"
         self.instructions = yml["instructions"]                            # a list of strings, each index is a separate step
+        i = 1
+        while (1):
+            if not os.path.isdir(self.recipeDir + yml["title"]):
+                os.rename(r"" + self.path, r"" + self.recipeDir + yml["title"])
+                self.path = self.recipeDir + yml["title"]
+                break
+            elif not os.path.isdir(self.recipeDir + yml["title"] + "(" + str(i) + ")"):
+                os.rename(r"" + self.path, r"" + self.recipeDir + yml["title"] + "(" + str(i) + ")")
+                self.path = self.recipeDir + yml["title"] + "(" + str(i) + ")"
+                break
+            i = i+1
         
     # Setter methods to assign values to member variables after construction
     

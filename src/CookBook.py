@@ -8,14 +8,15 @@ class CookBook:
 #Function to look up recipes(Project 4)
 #Has Recipes
 #Loads recipes from files
-    def _init_(self):
-        recipeArr = []
+    def __init__(self):
+        self.recipeArr = []
 
 
-    def loadFile(self,recipeName,fileName):
-        with open(fileName.yaml) as file:
+    def loadFile(self,fileLoc):
+        with open(fileLoc) as file:
 
-            Recipe recipeName(yaml.load(file,Loader=yaml.FullLoarder))
+            recipeName = Recipe()
+            recipeName.init2(yaml.full_load(file))
 
         self.recipeArr.append(recipeName)
 
