@@ -17,9 +17,10 @@ class RecipeGui(object):
         docstring
         """
 
-        self.sectionFont = 'Helvetica 20'
-        self.subSectionFont = 'Helvetica 12'
-        self.bodyFont = 'Helvetica 10'
+        self.titleFont = 'any 25'
+        self.sectionFont = 'any 20'
+        self.subSectionFont = 'any 12'
+        self.bodyFont = 'any 10'
         self.width = 125
 
         self.theme = theme
@@ -47,24 +48,25 @@ class RecipeGui(object):
         SYMBOL_UP = '▲'
         SYMBOL_DOWN = '▼'
 
-        longtext = """Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged."""
+
         # Defines the summary framed element
         summary_layout = [
             [sg.Text('Summary', font=self.sectionFont, enable_events=True)],
-            [sg.T(textwrap.fill(longtext, self.width), font=self.bodyFont)],
+            [sg.T(textwrap.fill(self.recipe.summary, self.width), font=self.bodyFont)],
             [sg.Text('_'*(self.width-18), font=self.bodyFont)]
         ]
 
         # Defines the Ingredients framed element
         tree_ingredients = sg.TreeData()
-        for i in range(10):
+        for i in range(len(self.recipe.ingredients)):
+            print(self.recipe.ingredients[i])
             tree_ingredients.Insert(
-                '', str(i), "ingredient"+str(i), values=[i])
+                '', str(i), self.recipe.ingredients[i]['name'], values=[self.recipe.ingredients[i]['amount'], self.recipe.ingredients[i]['unit']])
 
         ingredients_layout = [
             [sg.Text('Ingredients', font=self.sectionFont)],
             [sg.Tree(data=tree_ingredients,
-                     headings=['Amount', ],
+                     headings=['Amount', 'Unit'],
                      #    auto_size_columns=True,
                      num_rows=5,
                      col0_width=75,
@@ -73,12 +75,12 @@ class RecipeGui(object):
 
         ]
 
-        # Defines the Ingredients framed element
+        # Defines the Ingredients element
         self.list_col_instructions = []  # Holds the Instruction columns
         self.state_of_instructions = []  # If the text is hidden
-        for step in range(10):
+        for step in range(len(self.recipe.instructions)):
             name = " Step " + str(step) + ":"
-            details = textwrap.fill(longtext, self.width)
+            details = textwrap.fill(self.recipe.instructions[step], self.width)
 
             elm_state = sg.Text(SYMBOL_UP, key='--Step:' +
                                 str(step)+':SYM--', enable_events=True)
@@ -112,14 +114,14 @@ class RecipeGui(object):
         # ]
 
         # This defines the layout of the main window
-        layout = [[sg.Text('Recipe')]]
+        layout = [[sg.Text(self.recipe.title, font=self.titleFont)]]
         layout += summary_layout
         layout += ingredients_layout
         layout += instructions_layout
         layout += [[sg.Button('Close')]]
 
         # create the "Window"
-        return sg.Window('Window Title', layout, finalize=True)
+        return sg.Window(self.recipe.title, layout, finalize=True)
 
     def make_timer_gui(self) -> sg.Window:
         layout = [
@@ -151,8 +153,8 @@ class RecipeGui(object):
         SYMBOL_UP = '▲'
         SYMBOL_DOWN = '▼'
 
-        rec_window = self.make_rec_gui()
         time_window = self.make_timer_gui()
+        rec_window = self.make_rec_gui()
 
 
         while True:
@@ -242,4 +244,5 @@ class RecipeGui(object):
             
                 time_formated = self.format_time(self.timeLeft.seconds)
                 time_window['--time--'](time_formated)
-        window.close()
+        rec_window.close()
+        time_window.close()

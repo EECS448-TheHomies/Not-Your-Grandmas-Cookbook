@@ -1,14 +1,14 @@
-title: "MyRecipe"
+title: "My Second Recipe"
 
 time: 20
 
-servings: 4
+servings: 2
 
 summary: "This recipe is delicious. You should try it!"
 
 ingredients: 
     - name: "eggs"
-      amount: 3
+      amount: 6
       unit: "whole"
     - name: "milk"
       amount: .5
@@ -16,6 +16,13 @@ ingredients:
     - name: "flour"
       amount: 2
       unit: "cups"
+    - name: "water"
+      amount: 2
+      unit: "cups"
+    - name: "butter"
+      amount: 2
+      unit: "sticks"
+    
 
 instructions: 
     - "Preheat oven to 350"

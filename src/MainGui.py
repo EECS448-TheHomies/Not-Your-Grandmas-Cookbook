@@ -1,7 +1,9 @@
 import PySimpleGUI as sg
-from Recipe import Recipe
 
 from RecipeGui import RecipeGui
+
+from CookBook import CookBook
+from Recipe import Recipe
 
 
 class MainGUI(object):
@@ -19,6 +21,14 @@ class MainGUI(object):
         # This prints the debug prints to a window
         sg.Print(do_not_reroute_stdout=False)
 
+        self.cookbook = CookBook()
+
+
+        self.cookbook.loadFile(self.cookbook.recipeDir + "t1.yml")
+        self.cookbook.loadFile(self.cookbook.recipeDir + "t2.yml")
+
+
+
     def setGUITheme(self, theme):
         """Set the GUI theme
         """
@@ -28,12 +38,11 @@ class MainGUI(object):
         sg.theme(theme)
 
     # Make a list of the names of the recipes
-    def getRecipeNameList(self, filter: str, Recipes: list) -> list:
+    def getRecipeNameList(self, filter: str ) -> list:
         """Gets all the recipes in the Recipes list that contain the search term
 
         Args:
             filter: The string to search the recipes for. If empty string it will return all.
-            Recipes: The List of recipe objects.
 
         Returns:
             The return value. True for success, False otherwise.
@@ -41,10 +50,10 @@ class MainGUI(object):
 
         """
         namesOfRecipes = []
-
-        for recipe in self.listOfRecipes:
-            if filter == '' or filter in recipe['name']:
-                namesOfRecipes.append(recipe['name'])
+        
+        for rec in self.cookbook.recipeArr:
+            if filter == '' or filter in rec.title:
+                namesOfRecipes.append(rec.title)   
 
         return namesOfRecipes
 
@@ -54,9 +63,8 @@ class MainGUI(object):
         """
 
         # get the recipes
-        self.listOfRecipes = [{'name': 'r1 meat'}, {'name': 'r2 cheese'}]
 
-        namesOfRecipes = self.getRecipeNameList('', self.listOfRecipes)
+        namesOfRecipes = self.getRecipeNameList('')
 
         # Make the recipe list element
         self.elmRecipe = sg.Listbox(values=namesOfRecipes, size=(
@@ -77,7 +85,7 @@ class MainGUI(object):
                   [sg.Column(self.colButtons, justification='right')]]
 
         # create the "Window"
-        self.window = sg.Window('Window Title', layout, finalize=True)
+        self.window = sg.Window('CookBook', layout, finalize=True)
 
         while True:
             event, values = self.window()
@@ -89,15 +97,20 @@ class MainGUI(object):
             elif event == 'Search':
                 # window['-OUTPUT-'].update(values['-resSearch-'])
                 filtered_recipes = self.getRecipeNameList(
-                    values['-recSearch-'], self.listOfRecipes)
+                    values['-recSearch-'])
                 print(filtered_recipes)
                 self.elmRecipe(filtered_recipes)
 
             elif event == 'Open':
-                self.output(values['-recSelect-'])
+                print(values['-recSelect-'][0])
                 r = Recipe()
-                newGUI = RecipeGui(self.theme, r)
-                newGUI.run()
+                for rec in self.cookbook.recipeArr:
+                    print(rec.title)
+                    if values['-recSelect-'][0] == rec.title:
+                        self.output(rec.title)
+                        newGUI = RecipeGui(self.theme, rec)
+                        newGUI.run()
+                
 
                 pass
 
