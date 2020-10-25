@@ -1,4 +1,5 @@
 import PySimpleGUI as sg
+from Recipe import Recipe
 
 from RecipeGui import RecipeGui
 
@@ -94,7 +95,8 @@ class MainGUI(object):
 
             elif event == 'Open':
                 self.output(values['-recSelect-'])
-                newGUI = RecipeGui(self.theme)
+                r = Recipe()
+                newGUI = RecipeGui(self.theme, r)
                 newGUI.run()
 
                 pass
