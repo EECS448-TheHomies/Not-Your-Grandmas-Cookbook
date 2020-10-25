@@ -35,10 +35,11 @@ class RecipeGui(object):
     def collapse(self, layout, key):
         """
         Helper function that creates a Column that can be later made hidden, thus appearing "collapsed". Modified from pysimpleGUI cookbook
-        :param layout: The layout for the section
-        :param key: Key used to make this seciton visible / invisible
-        :return: A pinned column that can be placed directly into your layout
-        :rtype: sg.pin
+        Args:
+            layout: The layout for the section
+            key: Key used to make this seciton visible / invisible
+        Returns:
+            A pinned column that can be placed directly into your layout
         """
         return sg.pin(sg.Column(layout, key=key, visible=False))
 
