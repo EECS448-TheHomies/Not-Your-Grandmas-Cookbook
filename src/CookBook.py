@@ -12,7 +12,7 @@ class CookBook:
     def __init__(self):
         self.recipeArr = []
         self.parentDir = os.path.dirname(os.getcwd()) + "\\"          # e.g. C:\\Users\Username\ProgramFiles\Project3Folder\
-        self.recipeDir = self.parentDir + "recipes\\"                 # e.g. C:\\Users\Username\ProgramFiles\Project3Folder\recipes\
+        self.recipeDir = self.parentDir + "Recipes\\"                 # e.g. C:\\Users\Username\ProgramFiles\Project3Folder\Recipes\
 
 
     def loadFile(self,fileLoc):
@@ -34,6 +34,7 @@ class CookBook:
                 recipeName.path = self.recipeDir + yml["title"] + "(" + str(i) + ")"
                 break
             i = i+1
+        os.rename(fileLoc, self.recipeDir + "\\" + os.path.basename(recipeName.path) + "\\" + os.path.basename(fileLoc))
         
         # once the recipe has been created, we know there will be a directory for that recipe in \Recipes
         # so we can move the .yaml file into that directory
