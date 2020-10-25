@@ -1,0 +1,26 @@
+title: "MyRecipe"
+
+time: 20
+
+servings: 4
+
+summary: "This recipe is delicious. You should try it!"
+
+ingredients: 
+    - name: "eggs"
+      amount: 3
+      unit: "whole"
+    - name: "milk"
+      amount: .5
+      unit: "cups"
+    - name: "flour"
+      amount: 2
+      unit: "cups"
+
+instructions: 
+    - "Preheat oven to 350"
+    - "Crack eggs"
+    - "Mix eggs, flour, and milk"
+    - "Bake for 20 minutes"
+    - "Let cool and serve"
+    
