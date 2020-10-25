@@ -16,8 +16,6 @@ class Recipe:
     
     # Constructor that creates an empty recipe
     
-        self.parentDir = os.path.dirname(os.getcwd())           # e.g. C:\\Users\Username\ProgramFiles\Project3Folder
-        self.recipeDir = self.parentDir + "/recipes/"           # e.g. C:\\Users\Username\ProgramFiles\Project3Folder\recipes
         self.path = ""                                          # e.g. C:\\Users\Username\ProgramFiles\Project3Folder\recipes\"cake recipe"
         self.title = ""
         self.id = ""
@@ -28,18 +26,6 @@ class Recipe:
         self.summary = ""
         self.ingredients = []                                   # this will be a list of dictionaries that will contain details on the ingredients
         self.instructions = []                                  # this will be a list of strings
-        
-        i = 1
-        while (1):                                                          # Here we are checking if there is a directory in existance, if not make one
-            if not os.path.isdir(self.recipeDir + "new_recipe"):
-                os.makedirs(self.recipeDir + "new_recipe")
-                self.path = self.recipeDir + "new_recipe"
-                break
-            elif not os.path.isdir(self.recipeDir + "new_recipe" + "(" + str(i) + ")"):
-                os.makedirs(self.recipeDir + "new_recipe" + "(" + str(i) + ")")
-                self.path = self.recipeDir + "new_recipe" + "(" + str(i) + ")"
-                break
-            i = i+1
         
     def init0(self, title, id, time, servings, URL, image, summary, ingredients, instructions):
     
@@ -54,17 +40,6 @@ class Recipe:
         self.summary = summary
         self.ingredients = ingredients
         self.instructions = instructions
-        i = 1
-        while (1):
-            if not os.path.isdir(self.recipeDir + title):
-                os.rename(r"" + self.path, r"" + self.recipeDir + title)
-                self.path = self.recipeDir + title
-                break
-            elif not os.path.isdir(self.recipeDir + title + "(" + str(i) + ")"):
-                os.rename(r"" + self.path, r"" + self.recipeDir + title + "(" + str(i) + ")")
-                self.path = self.recipeDir + title + "(" + str(i) + ")"
-                break
-            i = i+1
 
     def init1(self, title, time, servings, summary, ingredients, instructions):
     
@@ -76,17 +51,6 @@ class Recipe:
         self.summary = summary
         self.ingredients = ingredients
         self.instructions = instructions
-        i = 1
-        while (1):
-            if not os.path.isdir(self.recipeDir + title):
-                os.rename(r"" + self.path, r"" + self.recipeDir + title)
-                self.path = self.recipeDir + title
-                break
-            elif not os.path.isdir(self.recipeDir + title + "(" + str(i) + ")"):
-                os.rename(r"" + self.path, r"" + self.recipeDir + title + "(" + str(i) + ")")
-                self.path = self.recipeDir + title + "(" + str(i) + ")"
-                break
-            i = i+1
         
     def init2(self, yml):                                                  
     
@@ -99,16 +63,6 @@ class Recipe:
         self.ingredients = yml["ingredients"]                              # a dictionary with the indexes of "name", "amount", & "unit"
         self.instructions = yml["instructions"]                            # a list of strings, each index is a separate step
         i = 1
-        while (1):
-            if not os.path.isdir(self.recipeDir + yml["title"]):
-                os.rename(r"" + self.path, r"" + self.recipeDir + yml["title"])
-                self.path = self.recipeDir + yml["title"]
-                break
-            elif not os.path.isdir(self.recipeDir + yml["title"] + "(" + str(i) + ")"):
-                os.rename(r"" + self.path, r"" + self.recipeDir + yml["title"] + "(" + str(i) + ")")
-                self.path = self.recipeDir + yml["title"] + "(" + str(i) + ")"
-                break
-            i = i+1
         
     # Setter methods to assign values to member variables after construction
     
