@@ -43,14 +43,11 @@ class RecipeGui(object):
         """
         return sg.pin(sg.Column(layout, key=key, visible=False))
 
-    def run(self):
-        """ Runs the GUI
-
-        """
-
+    def make_rec_gui(self):
         SYMBOL_UP = '▲'
         SYMBOL_DOWN = '▼'
 
+        
         longtext = """Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged."""
         # Defines the summary framed element
         summary_layout = [
@@ -78,8 +75,8 @@ class RecipeGui(object):
         ]
 
         # Defines the Ingredients framed element
-        list_col_instructions = []  # Holds the Instruction columns
-        state_of_instructions = []  # If the text is hidden
+        self.list_col_instructions = []  # Holds the Instruction columns
+        self.state_of_instructions = []  # If the text is hidden
         for step in range(10):
             name = " Step " + str(step) + ":"
             details = textwrap.fill(longtext, self.width)
@@ -93,15 +90,15 @@ class RecipeGui(object):
                 details, font=self.bodyFont)
 
             # Appended the step to steps list
-            list_col_instructions.append([[elm_state, elm_name], [self.collapse([[elm_details]], '--Step:'+str(step)+':TEXT--') ]] )
+            self.list_col_instructions.append([[elm_state, elm_name], [self.collapse([[elm_details]], '--Step:'+str(step)+':TEXT--') ]] )
 
             # set the default state to be hidden
-            state_of_instructions.append(False)
+            self.state_of_instructions.append(False)
 
         instructions_layout = [
             [sg.Text('Instructions', font=self.sectionFont)]]
 
-        for col in list_col_instructions:
+        for col in self.list_col_instructions:
             instructions_layout += col
             pass
 
@@ -122,10 +119,37 @@ class RecipeGui(object):
         layout += [[sg.Button('Close')]]
 
         # create the "Window"
-        window = sg.Window('Window Title', layout, finalize=True)
+        return sg.Window('Window Title', layout, finalize=True)
+
+    def make_timer_gui(self):
+        layout = [  
+            [  sg.Text('Food timer:', font=('Arial', 20)) ],                
+            [  sg.Text( font=('Arial', 45), size=(10,1), key='OUTPUT1', justification = 'center') ],
+ #         [   sg.Text('Food being cooked: '), sg.Output()],
+ #           [  sg.Text('Type something in'), sg.Input()  ], 
+            [  sg.Button('Start'),  sg.Button('Pause'), sg.Button('Exit'), sg.Button('Add 15mins'), 
+            sg.Button('Subtract 15mins')]  ]                           
+
+        self.time_count=0
+        self.time_timr= True
+        return sg.Window('FOOD TIME!', layout, finalize=True)
+        
+
+
+
+    def run(self):
+        """ Runs the GUI
+
+        """
+
+        SYMBOL_UP = '▲'
+        SYMBOL_DOWN = '▼'
+
+        rec_window = self.make_rec_gui()
+        time_window = self.make_timer_gui()
 
         while True:
-            event, values = window()
+            window, event, values = sg.read_all_windows()
             window.Refresh()
             print(event)
 
@@ -134,11 +158,11 @@ class RecipeGui(object):
             elif event == 'New Timer':
                 print("Make a new Timer")
 
-            for step in range(len(list_col_instructions)):
+            for step in range(len(self.list_col_instructions)):
                 if event == '--Step:'+str(step)+':SYM--' or event == '--Step:'+str(step)+':TITLE--':
 
-                    if state_of_instructions[step]:
-                        state_of_instructions[step] = False
+                    if self.state_of_instructions[step]:
+                        self.state_of_instructions[step] = False
 
                         print("Hide Step " + str(step))
                         window['--Step:'+str(step)+':SYM--'](SYMBOL_UP)
@@ -146,14 +170,36 @@ class RecipeGui(object):
                         window.Refresh()
 
                     else:
-                        state_of_instructions[step] = True
+                        self.state_of_instructions[step] = True
                         print("Expand Step " + str(step))
                         window['--Step:'+str(step)+':SYM--'](SYMBOL_DOWN)
                         window['--Step:'+str(step)+':TEXT--'](visible=True)
                         window.Refresh()
 
+            if event in ('Start'):
+                self.time_timr = True
+
+            
+            elif event in ('Pause'):
+                self.time_timr= False
+
+
+            elif event in ('Add 15mins'):
+                if self.time_timr==False:
+                    self.time_count=self.time_count+1500
+                    window['OUTPUT1'].update('{:02d}:{:02d}.{:02d}'.format((self.time_count // 100) // 60, (self.time_count // 100) % 60, self.time_count % 100))
+                    
+            
+            elif event in ('Subtract 15mins'):
+                if self.time_timr == False:
+                    self.time_count=self.time_count-1500
+                    window['OUTPUT1'].update('{:02d}:{:02d}.{:02d}'.format((self.time_count // 100) // 60, (self.time_count // 100) % 60, self.time_count % 100))
+                    
+
+            if self.time_timr == True:
+                window['OUTPUT1'].update('{:02d}:{:02d}.{:02d}'.format((self.time_count // 100) // 60, (self.time_count // 100) % 60, self.time_count % 100))
+                self.time_count = self.time_count+1
+
         window.close()
 
 
-def wrap(string, lenght=8):
-    return '\n'.join(textwrap.wrap(string, lenght))
