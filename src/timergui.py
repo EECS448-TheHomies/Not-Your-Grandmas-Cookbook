@@ -55,30 +55,32 @@ timr= True
 #and another button is pressed. Those are the if statements.
 #If statements are checked once the timer is paused to see if user wants to add or subtract time.
 
-"""While loop run will check for events
-Summary:
-    Premade Variables:
-        count(int): will keep track of the timer count
-        timr(bool): bool check to see if timr has been stopped by user
 
-    Actions:
-        While Loop: runs until break is detected which is if window is closed or the event hits Exit
-            if statements are meant to keep track of the premade variables and where the event is currently on
-                event in Exit or user closes window then break
-                event in Start then the timer starts, timr set to true
-                event in Pause then the timer pauses, timr set to false
-                event in +15mins has nested if statement checking if timr is set to false
-                    as a check to see if timer is paused. If so then adds 15 mins to counter.
-                event in -15mins has nested if statement checking if timr is set to false
-                    as a check to see if timer is paused. If so then subtracts 15 mins from counter
-                events same for +1/-1mins and +30/-30secs. Buttons doing what the events are labeled as
-
-            everytime the while loop loops, you have an if timr == true which if it is the case, the timer is
-                running. Which everytime it loops and timr is True, it will add 1 to the counter.
-            
-        Once broken out of the while loop, the window will close, hence the window.close()
-"""
 while True:
+
+    """While loop run will check for events
+    Summary:
+        Premade Variables:
+            count(int): will keep track of the timer count
+            timr(bool): bool check to see if timr has been stopped by user
+
+        Actions:
+            While Loop: runs until break is detected which is if window is closed or the event hits Exit
+                if statements are meant to keep track of the premade variables and where the event is currently on
+                    event in Exit or user closes window then break
+                    event in Start then the timer starts, timr set to true
+                    event in Pause then the timer pauses, timr set to false
+                    event in +15mins has nested if statement checking if timr is set to false
+                        as a check to see if timer is paused. If so then adds 15 mins to counter.
+                    event in -15mins has nested if statement checking if timr is set to false
+                        as a check to see if timer is paused. If so then subtracts 15 mins from counter
+                    events same for +1/-1mins and +30/-30secs. Buttons doing what the events are labeled as
+
+                everytime the while loop loops, you have an if timr == true which if it is the case, the timer is
+                    running. Which everytime it loops and timr is True, it will add 1 to the counter.
+                
+            Once broken out of the while loop, the window will close, hence the window.close()
+    """
 
     event, values = window.read(timeout=10)
     if event in (sg.WIN_CLOSED, 'Exit'):
