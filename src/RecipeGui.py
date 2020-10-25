@@ -31,7 +31,7 @@ class RecipeGui(object):
         sg.theme(theme)
 
         # This prints the debug prints to a window
-        sg.Print(do_not_reroute_stdout=False)
+        # sg.Print(do_not_reroute_stdout=False)
 
     def collapse(self, layout, key):
         """

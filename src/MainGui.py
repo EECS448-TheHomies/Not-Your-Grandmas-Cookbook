@@ -19,7 +19,7 @@ class MainGUI(object):
         self.setGUITheme(theme)
 
         # This prints the debug prints to a window
-        sg.Print(do_not_reroute_stdout=False)
+        # sg.Print(do_not_reroute_stdout=False)
 
         self.cookbook = CookBook()
 
