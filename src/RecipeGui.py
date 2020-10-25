@@ -151,8 +151,9 @@ class RecipeGui(object):
         SYMBOL_UP = '▲'
         SYMBOL_DOWN = '▼'
 
-        time_window = self.make_timer_gui()
         rec_window = self.make_rec_gui()
+        time_window = self.make_timer_gui()
+
 
         while True:
             event, values = rec_window.read(timeout=100)
