@@ -3,7 +3,7 @@
 #contains recipe objects
 import yaml
 import os
-from Recipe import Recipe
+from .Recipe import Recipe
 class CookBook:
 
 #Function to look up recipes(Project 4)

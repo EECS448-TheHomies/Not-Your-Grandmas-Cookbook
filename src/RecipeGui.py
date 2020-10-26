@@ -4,7 +4,7 @@ import textwrap
 from datetime import datetime, timedelta 
 
 from PySimpleGUI.PySimpleGUI import TabGroup
-from Recipe import Recipe
+from .Recipe import Recipe
 
 
 class RecipeGui(object):
