@@ -14,6 +14,8 @@ class MainGUI(object):
     def __init__(self, theme):
         """Sets up the options for the GUI
         
+        Args:
+            theme (str): The theme to set the GUI to  
         """
 
         self.setGUITheme(theme)
@@ -31,6 +33,9 @@ class MainGUI(object):
 
     def setGUITheme(self, theme):
         """Set the GUI theme
+        
+        Args:
+            theme (str): The theme to set the GUI to 
         """
         self.theme = theme
 
@@ -58,7 +63,7 @@ class MainGUI(object):
         return namesOfRecipes
 
     def run(self):
-        """Method that runs the gui
+        """Method that runs the GUI
         """
 
         # get the recipes

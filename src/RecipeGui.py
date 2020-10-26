@@ -8,8 +8,15 @@ from Recipe import Recipe
 
 
 class RecipeGui(object):
-    """
-    docstring
+    """ The class that creates a GUI to display a recipe
+
+    Attributes:
+        titleFont (str): font settings for the title
+        sectionFont (str): font settings for the section header
+        subSectionFont (str): font settings for the subsection header
+        bodyFont (str): font settings for the body
+        self.width (int): The width of the divider line
+        self.recipe (recipe): the recipe object that will be displayed
     """
 
     def __init__(self, theme: str, recipeOBJ: Recipe):
@@ -45,6 +52,12 @@ class RecipeGui(object):
         return sg.pin(sg.Column(layout, key=key, visible=False))
 
     def make_rec_gui(self) -> sg.Window:
+        """ This function creates the window for the recipe
+
+        Returns:
+            sg.Window: The recipe window object
+        """
+        
         SYMBOL_UP = '▲'
         SYMBOL_DOWN = '▼'
 
@@ -124,6 +137,11 @@ class RecipeGui(object):
         return sg.Window(self.recipe.title, layout, finalize=True)
 
     def make_timer_gui(self) -> sg.Window:
+        """This function makes the GUI for the timer
+
+        Returns:
+            sg.Window: The timer window object
+        """
         layout = [
             [sg.Text('Food timer:', font=('Arial', 20))],
             [sg.Text(font=('Arial', 45), size=(10, 1),
@@ -137,8 +155,13 @@ class RecipeGui(object):
         return sg.Window('FOOD TIME!', layout, finalize=True)
 
     def format_time(self, seconds:int)->str:
-        """
-        docstring
+        """ This is a helper function to format the timer
+        
+        Args: 
+            seconds (int): the time left on the timer
+
+        Returns:
+            str: the formatted string to display on the timer
         """
         t_m, t_s = divmod(seconds, 60)
         t_h, t_m = divmod(t_m, 60)
@@ -146,7 +169,7 @@ class RecipeGui(object):
         return time_formated
 
     def run(self):
-        """ Runs the GUI
+        """ This function Runs the GUI
 
         """
 
