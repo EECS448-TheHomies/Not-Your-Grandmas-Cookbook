@@ -7,7 +7,7 @@
 # Each individual recipe object will have its own directory stored in the recipes directory of our project folder
 
 import os
-from .Ingredient import Ingredient
+import spoonacular
 import yaml
 
 class Recipe:

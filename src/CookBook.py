@@ -1,8 +1,10 @@
 #CookBookClass
 #handles interfacing
 #contains recipe objects
+
 import yaml
 import os
+import spoonacular as sp
 from .Recipe import Recipe
 class CookBook:
 
@@ -10,6 +12,7 @@ class CookBook:
 #Has Recipes
 #Loads recipes from files
     def __init__(self):
+        api = sp.API("79cd1cbf518f4039988fd991e9977bd8")
         self.recipeArr = []
         self.parentDir = (os.getcwd()) + "\\"          # e.g. C:\\Users\Username\ProgramFiles\Project3Folder\
         self.recipeDir = self.parentDir  +"Recipes\\"                 # e.g. C:\\Users\Username\ProgramFiles\Project3Folder\Recipes\
@@ -42,7 +45,35 @@ class CookBook:
         
 
         self.recipeArr.append(recipeName)
-
+        
+    def find_recipes(self, query):
+        """
+        Searches for a given query and returns an array with 10 entries, each entry contains a recipe related 
+        to the query with an ID, a title, a link to an image, and the image type located at index 0, 1, 2, and 3, respectively
+        
+        Arguments: 
+            query (str): Query passed to the API to be searched for
+        """
+        response = self.api.search_recipes_complex(query)
+        data = response.json()["results"]
+        return data
+        
+    def save_recipe(self, list, index):
+        """
+        Saves the given recipe to a yaml file
+        
+        Arguments: 
+            data: A list of recipes that have an ID and title
+            index: The index of the desired recipe in the recipe list
+        """
+        id = str(list[index]["id"])
+        response = self.api._make_request("recipes/" + ID + "/information")
+        data = response.json()
+        with open(self.recipeDir + data["title"], 'w') as file:
+            doc = yaml.dump(data, file)
+        
+        
+        
 
     def printRecipes(self, recipeName):
         recipeName.printRecipe()

@@ -1,3 +1,4 @@
 Pyyaml
 PySimpleGUI
 PyInstaller
+spoonacular
