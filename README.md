@@ -19,5 +19,5 @@ clone this repo, then execute the MainGui.exe file in the root directory
 This program relies on the packages Pyyaml, PySimpleGUI, and PyInstaller. To install them please use pip3. 
 
 ```shell
-pip install -r  ./requirements.txt
+pip install -r  .\requirements.txt
 ```
