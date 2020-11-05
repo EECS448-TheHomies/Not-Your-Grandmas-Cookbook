@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 from PySimpleGUI.PySimpleGUI import TabGroup
 from Recipe import Recipe
-
+from timergui import TimerGui
 
 class RecipeGui(object):
     """ The class that creates a GUI to display a recipe
@@ -135,37 +135,7 @@ class RecipeGui(object):
         # create the "Window"
         return sg.Window(self.recipe.title, layout, finalize=True)
 
-    def make_timer_gui(self) -> sg.Window:
-        """This function makes the GUI for the timer
 
-        Returns:
-            sg.Window: The timer window object
-        """
-        layout = [
-            [sg.Input('Timer Label',font=('Arial',20),size=(25,1))],
-            [sg.Text(font=('Arial', 45), size=(10, 1),
-                     key='--time--', justification='center')],
-            [sg.Button("+5 min"), sg.Button("+1 min"), sg.Button("+30 sec"), sg.VerticalSeparator() ,sg.Button("-5 min"), sg.Button("-1 min"), sg.Button("-30 sec")],
-            [sg.Button('Start'),  sg.Button('Pause')]
-        ]
-       
-        self.time_count = datetime.now() + timedelta(minutes=5)
-        self.time_timr = True
-        return sg.Window('FOOD TIME!', layout, finalize=True)
-
-    def format_time(self, seconds:int)->str:
-        """ This is a helper function to format the timer
-        
-        Args: 
-            seconds (int): the time left on the timer
-
-        Returns:
-            str: the formatted string to display on the timer
-        """
-        t_m, t_s = divmod(seconds, 60)
-        t_h, t_m = divmod(t_m, 60)
-        time_formated = str(t_h)+":"+str(t_m)+":"+str(t_s)
-        return time_formated
 
     def run(self):
         """ This function Runs the GUI
@@ -175,21 +145,24 @@ class RecipeGui(object):
         SYMBOL_UP = '▲'
         SYMBOL_DOWN = '▼'
 
-        time_window = self.make_timer_gui()
         rec_window = self.make_rec_gui()
 
+        timers = [] # the timer objects
+        timer_windows = [] 
 
         while True:
-            event, values = rec_window.read(timeout=100)
-            tw_event, tw_values = time_window.Read(timeout=100)
-            print(event)
-
             
+            # Handle the recipe windows events
+            event, values = rec_window.read(timeout=100)            
 
             if event == sg.WIN_CLOSED or event == 'Close':  # if user closes window or clicks cancel
                 break
             elif event == 'New Timer':
                 print("Make a new Timer")
+                t = TimerGui(self.theme)
+                t.make_timer_gui()
+                timer_windows.append(t)
+
 
             for step in range(len(self.list_col_instructions)):
                 if event == '--Step:'+str(step)+':SYM--' or event == '--Step:'+str(step)+':TITLE--':
@@ -209,63 +182,74 @@ class RecipeGui(object):
                         rec_window['--Step:'+str(step)+':TEXT--'](visible=True)
                         rec_window.Refresh()
 
-            if tw_event == 'Start':
-                self.time_timr = True
-                self.time_count = datetime.now() + self.timeLeft
 
-            elif tw_event == 'Pause':
-                self.time_timr = False
+            # Handle the timer windows 
+            for timer_window in timer_windows:
+                tw_event, tw_values = timer_window.gui.Read(timeout=100)
+
+                if tw_event == 'Start':
+                    timer_window.time_timr = True
+                    timer_window.time_count = datetime.now() + timer_window.timeLeft
+
+                elif tw_event == 'Pause':
+                    timer_window.time_timr = False
+                    
+                    print(timer_window.timeLeft)
+
+
+
+                if  timer_window.time_timr == True:         
+                    if tw_event == '+5 min':
+                        timer_window.time_count += timedelta(minutes=5)
+
+                    elif tw_event == '+1 min':
+                        timer_window.time_count += timedelta(minutes=1)
+
+                    elif tw_event == '+30 sec':
+                        timer_window.time_count +=  timedelta(seconds=30)
+
+                    elif tw_event == '-5 min':
+                        timer_window.time_count -=  timedelta(minutes=5)
+
+                    elif tw_event == '-1 min':
+                        timer_window.time_count -=  timedelta(minutes=1)
+
+                    elif tw_event == '-30 sec':
+                        timer_window.time_count -= timedelta(seconds=30)
+
+
+                    timer_window.timeLeft = timer_window.time_count - datetime.now()
+                    time_formated = timer_window.format_time(timer_window.timeLeft.seconds)
+                    timer_window.gui['--time--'](time_formated)
                 
-                print(self.timeLeft)
 
+                    print(timer_window.time_count - datetime.now())
+                else:
+                    if tw_event == '+5 min':
+                        timer_window.timeLeft += timedelta(minutes=5)
 
+                    elif tw_event == '+1 min':
+                        timer_window.timeLeft += timedelta(minutes=1)
 
-            if  self.time_timr == True:         
-                if tw_event == '+5 min':
-                    self.time_count += timedelta(minutes=5)
+                    elif tw_event == '+30 sec':
+                        timer_window.timeLeft +=  timedelta(seconds=30)
 
-                elif tw_event == '+1 min':
-                    self.time_count += timedelta(minutes=1)
+                    elif tw_event == '-5 min':
+                        timer_window.timeLeft -=  timedelta(minutes=5)
 
-                elif tw_event == '+30 sec':
-                    self.time_count +=  timedelta(seconds=30)
+                    elif tw_event == '-1 min':
+                        timer_window.timeLeft -=  timedelta(minutes=1)
 
-                elif tw_event == '-5 min':
-                    self.time_count -=  timedelta(minutes=5)
-
-                elif tw_event == '-1 min':
-                    self.time_count -=  timedelta(minutes=1)
-
-                elif tw_event == '-30 sec':
-                    self.time_count -= timedelta(seconds=30)
-
-
-                self.timeLeft = self.time_count - datetime.now()
-                time_formated = self.format_time(self.timeLeft.seconds)
-                time_window['--time--'](time_formated)
-            
-
-                print(self.time_count - datetime.now())
-            else:
-                if tw_event == '+5 min':
-                    self.timeLeft += timedelta(minutes=5)
-
-                elif tw_event == '+1 min':
-                    self.timeLeft += timedelta(minutes=1)
-
-                elif tw_event == '+30 sec':
-                    self.timeLeft +=  timedelta(seconds=30)
-
-                elif tw_event == '-5 min':
-                    self.timeLeft -=  timedelta(minutes=5)
-
-                elif tw_event == '-1 min':
-                    self.timeLeft -=  timedelta(minutes=1)
-
-                elif tw_event == '-30 sec':
-                    self.timeLeft -= timedelta(seconds=30)
-            
-                time_formated = self.format_time(self.timeLeft.seconds)
-                time_window['--time--'](time_formated)
+                    elif tw_event == '-30 sec':
+                        timer_window.timeLeft -= timedelta(seconds=30)
+                
+                    time_formated = timer_window.format_time(timer_window.timeLeft.seconds)
+                    timer_window.gui['--time--'](time_formated)
+        
+        
+        
+        
+        
         rec_window.close()
-        time_window.close()
+        for timer_window in timer_windows:
+            timer_window.close()
