@@ -1,9 +1,9 @@
 import PySimpleGUI as sg
 
-from .RecipeGui import RecipeGui
+from RecipeGui import RecipeGui
 
-from .CookBook import CookBook
-from .Recipe import Recipe
+from CookBook import CookBook
+from Recipe import Recipe
 
 
 class MainGUI(object):

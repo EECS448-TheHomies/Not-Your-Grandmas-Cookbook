@@ -4,7 +4,7 @@ import textwrap
 from datetime import datetime, timedelta 
 
 from PySimpleGUI.PySimpleGUI import TabGroup
-from .Recipe import Recipe
+from Recipe import Recipe
 
 
 class RecipeGui(object):
@@ -120,14 +120,13 @@ class RecipeGui(object):
         instructions_layout += [[sg.Text('_' *
                                          (self.width-18), font=self.bodyFont)]]
 
-        # Defines the Instructions framed element
-        # instructions_layout = [
-        #     [sg.T('Text inside of a frame')],
-        #     [sg.CB('Check 1'), sg.CB('Check 2')],
-        # ]
+        # New timer bar
+        timer_layout = [[sg.Button('New Timer')]]
+
 
         # This defines the layout of the main window
         layout = [[sg.Text(self.recipe.title, font=self.titleFont)]]
+        layout += timer_layout
         layout += summary_layout
         layout += ingredients_layout
         layout += instructions_layout
@@ -143,7 +142,7 @@ class RecipeGui(object):
             sg.Window: The timer window object
         """
         layout = [
-            [sg.Text('Food timer:', font=('Arial', 20))],
+            [sg.Input('Timer Label',font=('Arial',20),size=(25,1))],
             [sg.Text(font=('Arial', 45), size=(10, 1),
                      key='--time--', justification='center')],
             [sg.Button("+5 min"), sg.Button("+1 min"), sg.Button("+30 sec"), sg.VerticalSeparator() ,sg.Button("-5 min"), sg.Button("-1 min"), sg.Button("-30 sec")],
@@ -185,6 +184,7 @@ class RecipeGui(object):
             tw_event, tw_values = time_window.Read(timeout=100)
             print(event)
 
+            
 
             if event == sg.WIN_CLOSED or event == 'Close':  # if user closes window or clicks cancel
                 break
