@@ -12,7 +12,7 @@ class CookBook:
 #Has Recipes
 #Loads recipes from files
     def __init__(self):
-        api = sp.API("79cd1cbf518f4039988fd991e9977bd8")
+        self.api = sp.API("79cd1cbf518f4039988fd991e9977bd8")
         self.recipeArr = []
         self.parentDir = (os.getcwd()) + "\\"          # e.g. C:\\Users\Username\ProgramFiles\Project3Folder\
         self.recipeDir = self.parentDir  +"Recipes\\"                 # e.g. C:\\Users\Username\ProgramFiles\Project3Folder\Recipes\
@@ -67,7 +67,7 @@ class CookBook:
             index: The index of the desired recipe in the recipe list
         """
         id = str(list[index]["id"])
-        response = self.api._make_request("recipes/" + ID + "/information")
+        response = self.api._make_request("recipes/" + id + "/information")
         data = response.json()
         with open(self.recipeDir + data["title"], 'w') as file:
             doc = yaml.dump(data, file)
