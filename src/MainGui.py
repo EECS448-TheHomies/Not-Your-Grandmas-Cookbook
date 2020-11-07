@@ -28,8 +28,7 @@ class MainGUI(object):
         self.cookbook = CookBook()
         
 
-        self.cookbook.loadFile(self.cookbook.recipeDir + "t1.yml")
-        self.cookbook.loadFile(self.cookbook.recipeDir + "t2.yml")
+        self.cookbook.loadAllRecipes()
 
 
 
@@ -74,20 +73,17 @@ class MainGUI(object):
 
         # Make the recipe list element
         self.elmRecipe = sg.Listbox(values=namesOfRecipes, size=(
-            60, 10), enable_events=True, key='-recSelect-')
+            72, 10), enable_events=True, key='-recSelect-')
 
         # Makes cols to justify buttons
         self.colButtons = [[sg.Button('Open'), sg.Button('Exit')]]
 
-        # Defines the output filed
-        self.output = sg.Text(size=(12, 1))  # key='-OUTPUT-'
 
         # This defines the layout of the main window
         layout = [[sg.Text('Your CookBook')],
                   [sg.InputText(key='-recSearch-'), sg.Button('Search'),
                    sg.Radio("local", "r1", default=True),sg.Radio("Remote", "r1")],
                   [self.elmRecipe],
-                  [self.output],
                   [sg.Column(self.colButtons, justification='right')]]
 
         # create the "Window"
@@ -109,7 +105,6 @@ class MainGUI(object):
             if event == sg.WIN_CLOSED or event == 'Exit':  # if user closes window or clicks cancel
                 break
             elif event == 'Search':
-                # window['-OUTPUT-'].update(values['-resSearch-'])
                 filtered_recipes = self.getRecipeNameList(
                     values['-recSearch-'])
                 print(filtered_recipes)
@@ -117,7 +112,7 @@ class MainGUI(object):
 
             elif event == 'Open':
                 print(values['-recSelect-'][0])
-                r = Recipe()
+                # r = Recipe()
                 for rec in self.cookbook.recipeArr:
                     print(rec.title)
                     if values['-recSelect-'][0] == rec.title:

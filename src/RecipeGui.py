@@ -71,6 +71,7 @@ class RecipeGui(object):
 
         # Defines the Ingredients framed element
         tree_ingredients = sg.TreeData()
+        print(self.recipe.ingredients)
         for i in range(len(self.recipe.ingredients)):
             print(self.recipe.ingredients[i])
             tree_ingredients.Insert(
@@ -82,7 +83,7 @@ class RecipeGui(object):
                      headings=['Amount', 'Unit'],
                      #    auto_size_columns=True,
                      num_rows=5,
-                     col0_width=75,
+                     col0_width=67,
                      show_expanded=False,)],
             [sg.Text('_'*(self.width-18), font=self.bodyFont)]
 

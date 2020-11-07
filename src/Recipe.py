@@ -43,6 +43,7 @@ class Recipe:
     # Constructor that creates an empty recipe
     
         self.recipeDir = os.path.expanduser('~') + '\\Documents\\Recipes'          # e.g. C:\\Users\Username\Documents\Recipes
+        
         self.title = yml['title']
         self.id = yml['id']
         self.time = yml['readyInMinutes']
@@ -60,7 +61,7 @@ class Recipe:
             name = yml['extendedIngredients'][i]['name']
             amount = str(yml['extendedIngredients'][i]['measures']['us']['amount'])
             unit = yml['extendedIngredients'][i]['measures']['us']['unitShort']
-            self.ingredients.append(name + ' | ' + amount + ' ' + unit)
+            self.ingredients.append({"name":name, "amount":amount, "unit": unit})
         
     # Setter methods to assign values to member variables after construction
     
