@@ -122,7 +122,7 @@ class RecipeGui(object):
                                          (self.width-18), font=self.bodyFont)]]
 
         # New timer bar
-        button_layout = [[sg.Button('New Timer')],[sg.Button('Print Ingredients')]]
+        button_layout = [[sg.Button('New Timer') , sg.Button('Print Ingredients')]]
 
 
         # This defines the layout of the main window
@@ -163,6 +163,9 @@ class RecipeGui(object):
                 t = TimerGui(self.theme)
                 t.make_timer_gui()
                 timer_windows.append(t)
+            elif event == 'Print Ingredients':
+                outputFile = self.recipe.printIngredientsPDF()
+                sg.popup_ok('Your Grocery List is saved at: ' + outputFile)
 
 
             for step in range(len(self.list_col_instructions)):
@@ -182,7 +185,8 @@ class RecipeGui(object):
                         rec_window['--Step:'+str(step)+':SYM--'](SYMBOL_DOWN)
                         rec_window['--Step:'+str(step)+':TEXT--'](visible=True)
                         rec_window.Refresh()
-
+            
+            
 
             # Handle the timer windows 
             for timer_window in timer_windows:

@@ -116,7 +116,6 @@ class MainGUI(object):
                 for rec in self.cookbook.recipeArr:
                     print(rec.title)
                     if values['-recSelect-'][0] == rec.title:
-                        self.output(rec.title)
                         newGUI = RecipeGui(self.theme, rec)
                         newGUI.run()
                 

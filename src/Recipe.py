@@ -169,6 +169,7 @@ class Recipe:
         Argument: none
         Action: function that is meant to export a list of ingredients to a PDF.
                 A grocery list.
+        Returns: The path to the new pdf
         """
 
         pdf=fpdf.FPDF(format='letter')
@@ -186,8 +187,9 @@ class Recipe:
 
             # pdf.write(6,str(self.ingredients[i]))
             pdf.ln()
-        pdf.output(self.recipeDir+"\\"+self.title+" Grocery List.pdf")
-
+        outputFile = self.recipeDir+"\\"+self.title+" Grocery List.pdf"
+        pdf.output(outputFile)
+        return outputFile
                 
         #Needs "pip install fpdf" 
 
