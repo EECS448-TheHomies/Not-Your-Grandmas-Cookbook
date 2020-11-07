@@ -58,9 +58,12 @@ class MainGUI(object):
         namesOfRecipes = []
         if not (self.local):
             self.cookbook.find_recipes(filter)
+            self.cookbook.loadAllRecipes()
 
         for rec in self.cookbook.recipeArr:
-            if filter == '' or filter in rec.title:
+            filter = filter.casefold()
+            tmpTitle = rec.title.casefold()
+            if filter == '' or filter  in tmpTitle:
                 namesOfRecipes.append(rec.title) 
 
         return namesOfRecipes
@@ -78,7 +81,7 @@ class MainGUI(object):
             72, 10), enable_events=True, key='-recSelect-')
 
         # Makes cols to justify buttons
-        self.colButtons = [[sg.Button('Open'), sg.Button('Exit')]]
+        self.colOpen = [[sg.Radio("Dark Mode", "r2",enable_events=True, key='-Dark-'),sg.Radio("Light Mode", "r2", default=True,enable_events=True, key='-Light-'), sg.Button('Open'), sg.Button('Exit')]]
 
 
         # This defines the layout of the main window
@@ -86,7 +89,7 @@ class MainGUI(object):
                   [sg.InputText(key='-recSearch-'), 
                    sg.Radio("local", "r1", default=True,enable_events=True,key='-local-'),sg.Radio("Remote", "r1",enable_events=True, key='-remote-'),sg.Button('Search')],
                   [self.elmRecipe],
-                  [sg.Column(self.colButtons, justification='right')]]
+                  [sg.Column(self.colOpen, justification='right')]]
 
         # create the "Window"
         self.window = sg.Window('CookBook', layout, finalize=True)
@@ -116,7 +119,10 @@ class MainGUI(object):
                     values['-recSearch-'])
                 print(filtered_recipes)
                 self.elmRecipe(filtered_recipes)
-            
+            elif event == '-Dark-':
+                self.setGUITheme("DarkGrey2")
+            elif event == '-Light-':
+                self.setGUITheme("LightGrey1")
             elif event == 'Open':
                 try:
                     for rec in self.cookbook.recipeArr:
