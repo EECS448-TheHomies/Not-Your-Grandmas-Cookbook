@@ -248,13 +248,17 @@ class Recipe:
 
         pdf=fpdf.FPDF(format='letter')
         pdf.add_page()
+        pdf.set_font("Arial",'BU', size=30)
+        pdf.write(20,str("Grocery List"))
+        pdf.ln()
+
         pdf.set_font("Arial", size=14)
 
         for i in range(len(self.ingredients)):
             
             pdf.write(6,str(self.ingredients[i]))
             pdf.ln()
-        pdf.output("testing.pdf")
+        pdf.output("GroceryList.pdf")
 
                 
         #Needs "pip install fpdf" 
