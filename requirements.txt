@@ -1,4 +1,5 @@
 bs4
+fpdf
 Pyyaml
 PySimpleGUI
 PyInstaller
