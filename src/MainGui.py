@@ -56,10 +56,12 @@ class MainGUI(object):
 
         """
         namesOfRecipes = []
-        
+        if not (self.local):
+            self.cookbook.find_recipes(filter)
+
         for rec in self.cookbook.recipeArr:
             if filter == '' or filter in rec.title:
-                namesOfRecipes.append(rec.title)   
+                namesOfRecipes.append(rec.title) 
 
         return namesOfRecipes
 
@@ -81,8 +83,8 @@ class MainGUI(object):
 
         # This defines the layout of the main window
         layout = [[sg.Text('Your CookBook')],
-                  [sg.InputText(key='-recSearch-'), sg.Button('Search'),
-                   sg.Radio("local", "r1", default=True),sg.Radio("Remote", "r1")],
+                  [sg.InputText(key='-recSearch-'), 
+                   sg.Radio("local", "r1", default=True,enable_events=True,key='-local-'),sg.Radio("Remote", "r1",enable_events=True, key='-remote-'),sg.Button('Search')],
                   [self.elmRecipe],
                   [sg.Column(self.colButtons, justification='right')]]
 
@@ -100,27 +102,34 @@ class MainGUI(object):
             """
             event, values = self.window()
             self.window.Refresh()
+            print(event)
             print(values)
 
             if event == sg.WIN_CLOSED or event == 'Exit':  # if user closes window or clicks cancel
                 break
+            elif event == '-local-':
+                self.local = True
+            elif event == '-remote-':
+                self.local = False
             elif event == 'Search':
                 filtered_recipes = self.getRecipeNameList(
                     values['-recSearch-'])
                 print(filtered_recipes)
                 self.elmRecipe(filtered_recipes)
-
+            
             elif event == 'Open':
-                print(values['-recSelect-'][0])
-                # r = Recipe()
-                for rec in self.cookbook.recipeArr:
-                    print(rec.title)
-                    if values['-recSelect-'][0] == rec.title:
-                        newGUI = RecipeGui(self.theme, rec)
-                        newGUI.run()
-                
+                try:
+                    for rec in self.cookbook.recipeArr:
+                        print(rec.title)
+                        print(values['-recSelect-'][0])
+                        if values['-recSelect-'][0] == rec.title:
+                            newGUI = RecipeGui(self.theme, rec)
+                            newGUI.run()
+                except:
+                    pass                    
+                    # r = Recipe()
+                    
 
-                pass
 
         self.window.close()
 
