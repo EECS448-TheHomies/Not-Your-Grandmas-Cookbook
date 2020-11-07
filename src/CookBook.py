@@ -61,6 +61,5 @@ class CookBook:
                 doc = yaml.dump(res, file) 
                 file.close()
                 
-                
 
 
