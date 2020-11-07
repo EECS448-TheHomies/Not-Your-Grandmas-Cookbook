@@ -122,12 +122,12 @@ class RecipeGui(object):
                                          (self.width-18), font=self.bodyFont)]]
 
         # New timer bar
-        timer_layout = [[sg.Button('New Timer')]]
+        button_layout = [[sg.Button('New Timer')],[sg.Button('Print Ingredients')]]
 
 
         # This defines the layout of the main window
         layout = [[sg.Text(self.recipe.title, font=self.titleFont)]]
-        layout += timer_layout
+        layout += button_layout
         layout += summary_layout
         layout += ingredients_layout
         layout += instructions_layout

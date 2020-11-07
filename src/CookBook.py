@@ -5,7 +5,7 @@
 import os
 import spoonacular as sp
 import yaml
-from Recipe import Recipe
+from .Recipe import Recipe
 class CookBook:
 
 #Function to look up recipes(Project 4)

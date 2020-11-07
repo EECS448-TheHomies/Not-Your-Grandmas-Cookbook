@@ -181,7 +181,10 @@ class Recipe:
 
         for i in range(len(self.ingredients)):
             
-            pdf.write(6,str(self.ingredients[i]))
+            pdf.cell(w=4,h=5,border=1)
+            pdf.write(6,self.ingredients[i]['name'] + ":\t" +self.ingredients[i]['amount'] + " " +  self.ingredients[i]['unit'])
+
+            # pdf.write(6,str(self.ingredients[i]))
             pdf.ln()
         pdf.output("GroceryList.pdf")
 
