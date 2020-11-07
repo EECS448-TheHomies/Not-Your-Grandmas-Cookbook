@@ -10,6 +10,7 @@ import os
 import spoonacular
 import yaml
 from bs4 import BeautifulSoup
+import fpdf
 
 class Recipe:
     
@@ -161,6 +162,28 @@ class Recipe:
         """
         self.instructions.delete(pos)
         
-   
+     
+    def printIngredientsPDF(self):
+        """
+        Argument: none
+        Action: function that is meant to export a list of ingredients to a PDF.
+                A grocery list.
+        """
 
+        pdf=fpdf.FPDF(format='letter')
+        pdf.add_page()
+        pdf.set_font("Arial",'BU', size=30)
+        pdf.write(20,str("Grocery List"))
+        pdf.ln()
+
+        pdf.set_font("Arial", size=14)
+
+        for i in range(len(self.ingredients)):
+            
+            pdf.write(6,str(self.ingredients[i]))
+            pdf.ln()
+        pdf.output("GroceryList.pdf")
+
+                
+        #Needs "pip install fpdf" 
 

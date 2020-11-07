@@ -62,18 +62,5 @@ class CookBook:
                 file.close()
                 
                 
-                
-                
-cb = CookBook()
-cb.find_recipes('chicken parm')
-cb.loadAllRecipes()
-print('done')
-
-
-
-
-
-
-
 
 

@@ -1,9 +1,9 @@
 import PySimpleGUI as sg
 
-from .RecipeGui import RecipeGui
+from RecipeGui import RecipeGui
 
-from .CookBook import CookBook
-from .Recipe import Recipe
+from CookBook import CookBook
+from Recipe import Recipe
 
 
 class MainGUI(object):
@@ -23,8 +23,10 @@ class MainGUI(object):
         # This prints the debug prints to a window
         # sg.Print(do_not_reroute_stdout=False)
 
+        self.local = True
+        
         self.cookbook = CookBook()
-
+        
 
         self.cookbook.loadFile(self.cookbook.recipeDir + "t1.yml")
         self.cookbook.loadFile(self.cookbook.recipeDir + "t2.yml")
@@ -83,7 +85,7 @@ class MainGUI(object):
         # This defines the layout of the main window
         layout = [[sg.Text('Your CookBook')],
                   [sg.InputText(key='-recSearch-'), sg.Button('Search'),
-                   sg.Radio("local", "r1", default=True)],
+                   sg.Radio("local", "r1", default=True),sg.Radio("Remote", "r1")],
                   [self.elmRecipe],
                   [self.output],
                   [sg.Column(self.colButtons, justification='right')]]
