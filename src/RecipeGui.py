@@ -71,6 +71,7 @@ class RecipeGui(object):
 
         # Defines the Ingredients framed element
         tree_ingredients = sg.TreeData()
+        print(self.recipe.ingredients)
         for i in range(len(self.recipe.ingredients)):
             print(self.recipe.ingredients[i])
             tree_ingredients.Insert(
@@ -82,7 +83,7 @@ class RecipeGui(object):
                      headings=['Amount', 'Unit'],
                      #    auto_size_columns=True,
                      num_rows=5,
-                     col0_width=75,
+                     col0_width=67,
                      show_expanded=False,)],
             [sg.Text('_'*(self.width-18), font=self.bodyFont)]
 
@@ -121,12 +122,12 @@ class RecipeGui(object):
                                          (self.width-18), font=self.bodyFont)]]
 
         # New timer bar
-        timer_layout = [[sg.Button('New Timer')]]
+        button_layout = [[sg.Button('New Timer') , sg.Button('Print Ingredients')]]
 
 
         # This defines the layout of the main window
         layout = [[sg.Text(self.recipe.title, font=self.titleFont)]]
-        layout += timer_layout
+        layout += button_layout
         layout += summary_layout
         layout += ingredients_layout
         layout += instructions_layout
@@ -162,6 +163,9 @@ class RecipeGui(object):
                 t = TimerGui(self.theme)
                 t.make_timer_gui()
                 timer_windows.append(t)
+            elif event == 'Print Ingredients':
+                outputFile = self.recipe.printIngredientsPDF()
+                sg.popup_ok('Your Grocery List is saved at: ' + outputFile)
 
 
             for step in range(len(self.list_col_instructions)):
@@ -181,7 +185,8 @@ class RecipeGui(object):
                         rec_window['--Step:'+str(step)+':SYM--'](SYMBOL_DOWN)
                         rec_window['--Step:'+str(step)+':TEXT--'](visible=True)
                         rec_window.Refresh()
-
+            
+            
 
             # Handle the timer windows 
             for timer_window in timer_windows:

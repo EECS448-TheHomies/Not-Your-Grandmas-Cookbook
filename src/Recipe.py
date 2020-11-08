@@ -43,6 +43,8 @@ class Recipe:
     # Constructor that creates an empty recipe
     
         self.recipeDir = os.path.expanduser('~') + '\\Documents\\Recipes'          # e.g. C:\\Users\Username\Documents\Recipes
+        self.groceryListDir = os.path.expanduser('~') + '\\Documents\\GroceryLists'          # e.g. C:\\Users\Username\Documents\Recipes
+
         self.title = yml['title']
         self.id = yml['id']
         self.time = yml['readyInMinutes']
@@ -60,7 +62,7 @@ class Recipe:
             name = yml['extendedIngredients'][i]['name']
             amount = str(yml['extendedIngredients'][i]['measures']['us']['amount'])
             unit = yml['extendedIngredients'][i]['measures']['us']['unitShort']
-            self.ingredients.append(name + ' | ' + amount + ' ' + unit)
+            self.ingredients.append({"name":name, "amount":amount, "unit": unit})
         
     # Setter methods to assign values to member variables after construction
         
@@ -69,22 +71,30 @@ class Recipe:
         Argument: none
         Action: function that is meant to export a list of ingredients to a PDF.
                 A grocery list.
+        Returns: The path to the new pdf
         """
 
         pdf=fpdf.FPDF(format='letter')
         pdf.add_page()
         pdf.set_font("Arial",'BU', size=30)
-        pdf.write(20,str("Grocery List"))
+        pdf.write(20,str("Grocery List For: "+ self.title))
         pdf.ln()
 
         pdf.set_font("Arial", size=14)
 
         for i in range(len(self.ingredients)):
             
-            pdf.write(6,str(self.ingredients[i]))
-            pdf.ln()
-        pdf.output("GroceryList.pdf")
+            pdf.cell(w=4,h=5,border=1)
+            pdf.write(6,self.ingredients[i]['name'] + ":\t" +self.ingredients[i]['amount'] + " " +  self.ingredients[i]['unit'])
 
+            # pdf.write(6,str(self.ingredients[i]))
+            pdf.ln()
+
+        if not os.path.isdir(self.groceryListDir):
+            os.makedirs(self.groceryListDir)
+        outputFile = self.groceryListDir+"\\"+self.title+" Grocery List.pdf"
+        pdf.output(outputFile)
+        return outputFile
                 
         #Needs "pip install fpdf" 
 

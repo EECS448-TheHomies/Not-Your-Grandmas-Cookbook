@@ -28,8 +28,7 @@ class MainGUI(object):
         self.cookbook = CookBook()
         
 
-        self.cookbook.loadFile(self.cookbook.recipeDir + "t1.yml")
-        self.cookbook.loadFile(self.cookbook.recipeDir + "t2.yml")
+        self.cookbook.loadAllRecipes()
 
 
 
@@ -57,10 +56,15 @@ class MainGUI(object):
 
         """
         namesOfRecipes = []
-        
+        if not (self.local):
+            self.cookbook.find_recipes(filter)
+            self.cookbook.loadAllRecipes()
+
         for rec in self.cookbook.recipeArr:
-            if filter == '' or filter in rec.title:
-                namesOfRecipes.append(rec.title)   
+            filter = filter.casefold()
+            tmpTitle = rec.title.casefold()
+            if filter == '' or filter  in tmpTitle:
+                namesOfRecipes.append(rec.title) 
 
         return namesOfRecipes
 
@@ -74,21 +78,18 @@ class MainGUI(object):
 
         # Make the recipe list element
         self.elmRecipe = sg.Listbox(values=namesOfRecipes, size=(
-            60, 10), enable_events=True, key='-recSelect-')
+            72, 10), enable_events=True, key='-recSelect-')
 
         # Makes cols to justify buttons
-        self.colButtons = [[sg.Button('Open'), sg.Button('Exit')]]
+        self.colOpen = [[sg.Radio("Dark Mode", "r2",enable_events=True, key='-Dark-'),sg.Radio("Light Mode", "r2", default=True,enable_events=True, key='-Light-'), sg.Button('Open'), sg.Button('Exit')]]
 
-        # Defines the output filed
-        self.output = sg.Text(size=(12, 1))  # key='-OUTPUT-'
 
         # This defines the layout of the main window
         layout = [[sg.Text('Your CookBook')],
-                  [sg.InputText(key='-recSearch-'), sg.Button('Search'),
-                   sg.Radio("local", "r1", default=True),sg.Radio("Remote", "r1")],
+                  [sg.InputText(key='-recSearch-'), 
+                   sg.Radio("local", "r1", default=True,enable_events=True,key='-local-'),sg.Radio("Remote", "r1",enable_events=True, key='-remote-'),sg.Button('Search')],
                   [self.elmRecipe],
-                  [self.output],
-                  [sg.Column(self.colButtons, justification='right')]]
+                  [sg.Column(self.colOpen, justification='right')]]
 
         # create the "Window"
         self.window = sg.Window('CookBook', layout, finalize=True)
@@ -104,29 +105,37 @@ class MainGUI(object):
             """
             event, values = self.window()
             self.window.Refresh()
+            print(event)
             print(values)
 
             if event == sg.WIN_CLOSED or event == 'Exit':  # if user closes window or clicks cancel
                 break
+            elif event == '-local-':
+                self.local = True
+            elif event == '-remote-':
+                self.local = False
             elif event == 'Search':
-                # window['-OUTPUT-'].update(values['-resSearch-'])
                 filtered_recipes = self.getRecipeNameList(
                     values['-recSearch-'])
                 print(filtered_recipes)
                 self.elmRecipe(filtered_recipes)
-
+            elif event == '-Dark-':
+                self.setGUITheme("DarkGrey2")
+            elif event == '-Light-':
+                self.setGUITheme("LightGrey1")
             elif event == 'Open':
-                print(values['-recSelect-'][0])
-                r = Recipe()
-                for rec in self.cookbook.recipeArr:
-                    print(rec.title)
-                    if values['-recSelect-'][0] == rec.title:
-                        self.output(rec.title)
-                        newGUI = RecipeGui(self.theme, rec)
-                        newGUI.run()
-                
+                try:
+                    for rec in self.cookbook.recipeArr:
+                        print(rec.title)
+                        print(values['-recSelect-'][0])
+                        if values['-recSelect-'][0] == rec.title:
+                            newGUI = RecipeGui(self.theme, rec)
+                            newGUI.run()
+                except:
+                    pass                    
+                    # r = Recipe()
+                    
 
-                pass
 
         self.window.close()
 
