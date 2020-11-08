@@ -1,0 +1,551 @@
+aggregateLikes: 2
+analyzedInstructions:
+- name: ''
+  steps:
+  - equipment: []
+    ingredients:
+    - id: 5091
+      image: chicken-thigh.jpg
+      localizedName: chicken thighs
+      name: chicken thighs
+    number: 1
+    step: Cut the chicken thighs into one inch sized pieces.
+  - equipment: []
+    ingredients:
+    - id: 1102047
+      image: salt-and-pepper.jpg
+      localizedName: salt and pepper
+      name: salt and pepper
+    - id: 11529
+      image: tomato.png
+      localizedName: tomato
+      name: tomato
+    - id: 11215
+      image: garlic.png
+      localizedName: garlic
+      name: garlic
+    - id: 11282
+      image: brown-onion.png
+      localizedName: onion
+      name: onion
+    - id: 1002030
+      image: pepper.jpg
+      localizedName: pepper
+      name: pepper
+    - id: 2047
+      image: salt.jpg
+      localizedName: salt
+      name: salt
+    number: 2
+    step: Add about 2 teaspoons of salt and 2 teaspoons of pepper. Or do what I always
+      do for dishes that call for salt and pepper. I use Masterfoods Garlic Pepper.
+      Give it a good sprinkle, about 1 tablespoon of it. Set aside to marinate for
+      a couple of hours.Slice the top of the tomatoes off.Using a small spoon, scoop
+      out the soft insides of the tomatoes. This reduces the moisture in the dish
+      and prevents sogginess.Chop the tomatoes up into small bits.Chop the onions
+      into small bits.
+  - equipment:
+    - id: 404783
+      image: bowl.jpg
+      localizedName: bowl
+      name: bowl
+    ingredients:
+    - id: 11165
+      image: cilantro.png
+      localizedName: cilantro
+      name: cilantro
+    - id: 11529
+      image: tomato.png
+      localizedName: tomato
+      name: tomato
+    - id: 11282
+      image: brown-onion.png
+      localizedName: onion
+      name: onion
+    number: 3
+    step: Place the onions and tomatoes in a large bowl.Chop up a bunch of cilantro.
+      Use as much or as little as you like.
+  - equipment: []
+    ingredients:
+    - id: 11165
+      image: cilantro.png
+      localizedName: cilantro
+      name: cilantro
+    - id: 11529
+      image: tomato.png
+      localizedName: tomato
+      name: tomato
+    - id: 11282
+      image: brown-onion.png
+      localizedName: onion
+      name: onion
+    number: 4
+    step: Add the cilantro to the onions-tomatoes mixture. Toss together and set aside.
+  - equipment: []
+    ingredients:
+    - id: 9037
+      image: avocado.jpg
+      localizedName: avocado
+      name: avocado
+    number: 5
+    step: Cut a slit round an avocado, against its seed.Holding each side of the cut
+      avocado, twist the avocado open to reveal the seed.
+  - equipment: []
+    ingredients: []
+    number: 6
+    step: Remove the seed and scoop out the flesh.
+  - equipment:
+    - id: 404783
+      image: bowl.jpg
+      localizedName: bowl
+      name: bowl
+    ingredients:
+    - id: 9037
+      image: avocado.jpg
+      localizedName: avocado
+      name: avocado
+    number: 7
+    step: Place the avocado flesh in a large bowl and mash it up evenly till it becomes
+      creamy.
+  - equipment: []
+    ingredients:
+    - id: 9037
+      image: avocado.jpg
+      localizedName: avocado
+      name: avocado
+    - id: 11529
+      image: tomato.png
+      localizedName: tomato
+      name: tomato
+    number: 8
+    step: Add the tomatoes mixture to the avocados.
+  - equipment: []
+    ingredients:
+    - id: 1019016
+      image: apple-juice.jpg
+      localizedName: juice
+      name: juice
+    - id: 9150
+      image: lemon.png
+      localizedName: lemon
+      name: lemon
+    number: 9
+    step: Combine well.Squeeze in juice from one lemon.
+  - equipment:
+    - id: 404783
+      image: bowl.jpg
+      localizedName: bowl
+      name: bowl
+    ingredients:
+    - id: 1009037
+      image: guacamole.jpg
+      localizedName: guacamole
+      name: guacamole
+    - id: 5006
+      image: whole-chicken.jpg
+      localizedName: whole chicken
+      name: whole chicken
+    - id: 11408
+      image: french-fries-isolated.jpg
+      localizedName: french fries
+      name: french fries
+    - id: 2047
+      image: salt.jpg
+      localizedName: salt
+      name: salt
+    number: 10
+    step: Add a generous portion of salt to taste. About 1 to 2 teaspoons.At this
+      point, youll have guacamole. If you like, dish it up in a serving bowl and serve
+      it with chips.Now cook the chicken.
+  - equipment:
+    - id: 404645
+      image: pan.png
+      localizedName: frying pan
+      name: frying pan
+    ingredients:
+    - id: 4582
+      image: vegetable-oil.jpg
+      localizedName: cooking oil
+      name: cooking oil
+    - id: 5006
+      image: whole-chicken.jpg
+      localizedName: whole chicken
+      name: whole chicken
+    number: 11
+    step: Heat a pan with a few tablespoons of cooking oil till its very hot. It has
+      to be very hot or the chicken wont brown.
+  - equipment:
+    - id: 404645
+      image: pan.png
+      localizedName: frying pan
+      name: frying pan
+    ingredients:
+    - id: 18364
+      image: flour-tortilla.jpg
+      localizedName: tortilla
+      name: tortilla
+    - id: 5006
+      image: whole-chicken.jpg
+      localizedName: whole chicken
+      name: whole chicken
+    - id: 18070
+      image: toast
+      localizedName: toast
+      name: toast
+    number: 12
+    step: Add the chicken to the pan. Be careful! Itll sizzle and splatter.Turn the
+      pieces over to brown the other side after a few minutes.When the chicken are
+      browned, remove them from the pan and set aside at a warm place.Using a clean,
+      dry pan, toast the tortillas one at a time on each side.They are ready to be
+      used when they are soft and warm.
+  - equipment: []
+    ingredients:
+    - id: 1009037
+      image: guacamole.jpg
+      localizedName: guacamole
+      name: guacamole
+    number: 13
+    step: Add a serving of the guacamole mixture.
+  - equipment: []
+    ingredients:
+    - id: 18364
+      image: flour-tortilla.jpg
+      localizedName: tortilla
+      name: tortilla
+    - id: 5006
+      image: whole-chicken.jpg
+      localizedName: whole chicken
+      name: whole chicken
+    - id: 0
+      image: dinner-yeast-rolls.jpg
+      localizedName: roll
+      name: roll
+    - id: 10018364
+      image: flour-tortilla.jpg
+      localizedName: wrap
+      name: wrap
+    number: 14
+    step: Add a serving of the chicken.Quickly wrap the burrito up. If it cools, the
+      tortilla will crack and it would be impossible to roll it up.
+  - equipment: []
+    ingredients:
+    - id: 0
+      image: dinner-yeast-rolls.jpg
+      localizedName: roll
+      name: roll
+    number: 15
+    step: Roll over once. Fold in the sides, and roll over again till its fully wrapped.
+  - equipment:
+    - id: 404765
+      image: aluminum-foil.png
+      localizedName: aluminum foil
+      name: aluminum foil
+    - id: 404784
+      image: oven.jpg
+      localizedName: oven
+      name: oven
+    ingredients:
+    - id: 10018364
+      image: flour-tortilla.jpg
+      localizedName: wrap
+      name: wrap
+    number: 16
+    step: Serve immediately or wrap in aluminum foil and keep them in the oven till
+      ready to eat.
+cheap: false
+creditsText: "Foodista.com \u2013 The Cooking Encyclopedia Everyone Can Edit"
+cuisines:
+- Mexican
+dairyFree: true
+diets:
+- dairy free
+dishTypes:
+- lunch
+- main course
+- main dish
+- dinner
+extendedIngredients:
+- aisle: Produce
+  amount: 3.0
+  consistency: solid
+  id: 9037
+  image: avocado.jpg
+  measures:
+    metric:
+      amount: 3.0
+      unitLong: ''
+      unitShort: ''
+    us:
+      amount: 3.0
+      unitLong: ''
+      unitShort: ''
+  meta:
+  - ripe
+  metaInformation:
+  - ripe
+  name: avocadoes
+  original: 3 ripe avocadoes
+  originalName: ripe avocadoes
+  originalString: 3 ripe avocadoes
+  unit: ''
+- aisle: Meat
+  amount: 600.0
+  consistency: solid
+  id: 1015006
+  image: chicken-breasts.png
+  measures:
+    metric:
+      amount: 600.0
+      unitLong: grams
+      unitShort: g
+    us:
+      amount: 1.323
+      unitLong: pounds
+      unitShort: lb
+  meta: []
+  metaInformation: []
+  name: chicken meat
+  original: 600 grams chicken thigh meat
+  originalName: chicken thigh meat
+  originalString: 600 grams chicken thigh meat
+  unit: grams
+- aisle: Produce;Spices and Seasonings
+  amount: 1.0
+  consistency: solid
+  id: 11165
+  image: cilantro.png
+  measures:
+    metric:
+      amount: 1.0
+      unitLong: bunch
+      unitShort: bunch
+    us:
+      amount: 1.0
+      unitLong: bunch
+      unitShort: bunch
+  meta:
+  - (coriander)
+  metaInformation:
+  - (coriander)
+  name: cilantro
+  original: 1 bunch of cilantro (coriander)
+  originalName: cilantro (coriander)
+  originalString: 1 bunch of cilantro (coriander)
+  unit: bunch
+- aisle: Bakery/Bread;Pasta and Rice;Ethnic Foods
+  amount: 4.0
+  consistency: solid
+  id: 10218364
+  image: flour-tortilla.jpg
+  measures:
+    metric:
+      amount: 4.0
+      unitLong: ''
+      unitShort: ''
+    us:
+      amount: 4.0
+      unitLong: ''
+      unitShort: ''
+  meta: []
+  metaInformation: []
+  name: flour tortillas
+  original: 4 flour tortillas
+  originalName: flour tortillas
+  originalString: 4 flour tortillas
+  unit: ''
+- aisle: Produce
+  amount: 1.0
+  consistency: liquid
+  id: 9152
+  image: lemon-juice.jpg
+  measures:
+    metric:
+      amount: 1.0
+      unitLong: ''
+      unitShort: ''
+    us:
+      amount: 1.0
+      unitLong: ''
+      unitShort: ''
+  meta: []
+  metaInformation: []
+  name: lemon juice
+  original: 1 Juice from lemon
+  originalName: Juice from lemon
+  originalString: 1 Juice from lemon
+  unit: ''
+- aisle: Produce
+  amount: 1.0
+  consistency: solid
+  id: 11282
+  image: brown-onion.png
+  measures:
+    metric:
+      amount: 1.0
+      unitLong: large
+      unitShort: large
+    us:
+      amount: 1.0
+      unitLong: large
+      unitShort: large
+  meta:
+  - chopped
+  metaInformation:
+  - chopped
+  name: onion
+  original: 1 large onion, chopped
+  originalName: onion, chopped
+  originalString: 1 large onion, chopped
+  unit: large
+- aisle: Spices and Seasonings
+  amount: 1.0
+  consistency: solid
+  id: 1002030
+  image: pepper.jpg
+  measures:
+    metric:
+      amount: 1.0
+      unitLong: teaspoon
+      unitShort: tsp
+    us:
+      amount: 1.0
+      unitLong: teaspoon
+      unitShort: tsp
+  meta:
+  - to taste
+  metaInformation:
+  - to taste
+  name: pepper
+  original: 1 teaspoon pepper, or to taste
+  originalName: pepper, or to taste
+  originalString: 1 teaspoon pepper, or to taste
+  unit: teaspoon
+- aisle: Spices and Seasonings
+  amount: 2.0
+  consistency: solid
+  id: 2047
+  image: salt.jpg
+  measures:
+    metric:
+      amount: 2.0
+      unitLong: teaspoons
+      unitShort: tsps
+    us:
+      amount: 2.0
+      unitLong: teaspoons
+      unitShort: tsps
+  meta:
+  - to taste
+  metaInformation:
+  - to taste
+  name: salt
+  original: 2 teaspoons Salt, or to taste
+  originalName: Salt, or to taste
+  originalString: 2 teaspoons Salt, or to taste
+  unit: teaspoons
+- aisle: Produce
+  amount: 4.0
+  consistency: solid
+  id: 11529
+  image: tomato.png
+  measures:
+    metric:
+      amount: 4.0
+      unitLong: larges
+      unitShort: large
+    us:
+      amount: 4.0
+      unitLong: larges
+      unitShort: large
+  meta: []
+  metaInformation: []
+  name: tomatoes
+  original: 4 large tomatoes
+  originalName: tomatoes
+  originalString: 4 large tomatoes
+  unit: large
+gaps: 'no'
+glutenFree: false
+healthScore: 33.0
+id: 637999
+image: https://spoonacular.com/recipeImages/637999-556x370.jpg
+imageType: jpg
+instructions: <ol><li>Cut the chicken thighs into one inch sized pieces.</li><li>Add
+  about 2 teaspoons of salt and 2 teaspoons of pepper. Or do what I always do for
+  dishes that call for salt and pepper. I use Masterfoods Garlic Pepper. Give it a
+  good sprinkle, about 1 tablespoon of it. Set aside to marinate for a couple of hours.</li><li>Slice
+  the top of the tomatoes off.</li><li>Using a small spoon, scoop out the soft insides
+  of the tomatoes. This reduces the moisture in the dish and prevents sogginess.</li><li>Chop
+  the tomatoes up into small bits.</li><li>Chop the onions into small bits.</li><li>Place
+  the onions and tomatoes in a large bowl.</li><li>Chop up a bunch of cilantro. Use
+  as much or as little as you like.</li><li>Add the cilantro to the onions-tomatoes
+  mixture. Toss together and set aside.</li><li>Cut a slit round an avocado, against
+  its seed.</li><li>Holding each side of the cut avocado, twist the avocado open to
+  reveal the seed.</li><li>Remove the seed and scoop out the flesh. Place the avocado
+  flesh in a large bowl and mash it up evenly till it becomes creamy.</li><li>Add
+  the tomatoes mixture to the avocados.</li><li>Combine well.</li><li>Squeeze in juice
+  from one lemon.</li><li>Add a generous portion of salt to taste. About 1 to 2 teaspoons.</li><li>At
+  this point, youll have guacamole. If you like, dish it up in a serving bowl and
+  serve it with chips.</li><li>Now cook the chicken. Heat a pan with a few tablespoons
+  of cooking oil till its very hot. It has to be very hot or the chicken wont brown.</li><li>Add
+  the chicken to the pan. Be careful! Itll sizzle and splatter.</li><li>Turn the pieces
+  over to brown the other side after a few minutes.</li><li>When the chicken are browned,
+  remove them from the pan and set aside at a warm place.</li><li>Using a clean, dry
+  pan, toast the tortillas one at a time on each side.</li><li>They are ready to be
+  used when they are soft and warm.</li><li>Add a serving of the guacamole mixture.</li><li>Add
+  a serving of the chicken.</li><li>Quickly wrap the burrito up. If it cools, the
+  tortilla will crack and it would be impossible to roll it up.</li><li>Roll over
+  once. Fold in the sides, and roll over again till its fully wrapped.</li><li>Serve
+  immediately or wrap in aluminum foil and keep them in the oven till ready to eat.</li></ol>
+license: CC BY 3.0
+lowFodmap: false
+occasions: []
+originalId: null
+pricePerServing: 300.17
+readyInMinutes: 45
+servings: 4
+sourceName: Foodista
+sourceUrl: http://www.foodista.com/recipe/YCKK77YK/chicken-burrito-by-bing
+spoonacularScore: 76.0
+spoonacularSourceUrl: https://spoonacular.com/chicken-burritos-637999
+summary: Chicken Burritos is a <b>dairy free</b> main course. One serving contains
+  <b>691 calories</b>, <b>35g of protein</b>, and <b>47g of fat</b>. For <b>$2.81
+  per serving</b>, this recipe <b>covers 32%</b> of your daily requirements of vitamins
+  and minerals. 1 person has made this recipe and would make it again. A mixture of
+  tomatoes, chicken thigh meat, pepper, and a handful of other ingredients are all
+  it takes to make this recipe so flavorful. To use up the onion you could follow
+  this main course with the <a href="https://spoonacular.com/recipes/candy-corn-cupcakes-63881">Candy
+  Corn Cupcakes</a> as a dessert. From preparation to the plate, this recipe takes
+  approximately <b>45 minutes</b>. All things considered, we decided this recipe <b>deserves
+  a spoonacular score of 74%</b>. This score is pretty good. Similar recipes include
+  <a href="https://spoonacular.com/recipes/chicken-burritos-137269">Chicken Burritos</a>,
+  <a href="https://spoonacular.com/recipes/chicken-burritos-433567">Chicken Burritos</a>,
+  and <a href="https://spoonacular.com/recipes/chicken-burritos-560456">Chicken Burritos</a>.
+sustainable: false
+title: Chicken Burritos
+vegan: false
+vegetarian: false
+veryHealthy: false
+veryPopular: false
+weightWatcherSmartPoints: 20
+winePairing:
+  pairedWines:
+  - riesling
+  - sparkling rose
+  - pinot noir
+  pairingText: "Mexican on the menu? Try pairing with Riesling, Sparkling ros\xE9\
+    , and Pinot Noir. Acidic white wines like riesling or low-tannin reds like pinot\
+    \ noir can work well with Mexican dishes. Sparkling ros\xE9 is a safe pairing\
+    \ too. The Barefoot Cellars Riesling Wine with a 5 out of 5 star rating seems\
+    \ like a good match. It costs about 13 dollars per bottle."
+  productMatches:
+  - averageRating: 1.0
+    description: Juicy nectarine and pear flavors complement the lingering sweet citrus
+      and honey finish
+    id: 428270
+    imageUrl: https://spoonacular.com/productImages/428270-312x231.jpg
+    link: https://www.amazon.com/Barefoot-Cellars-California-Riesling-Wine/dp/B01N9YIBVT?tag=spoonacular-20
+    price: $12.99
+    ratingCount: 1.0
+    score: 0.75
+    title: Barefoot Cellars Riesling Wine
