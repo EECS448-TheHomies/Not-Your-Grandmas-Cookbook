@@ -43,7 +43,7 @@ class Recipe:
     # Constructor that creates an empty recipe
     
         self.recipeDir = os.path.expanduser('~') + '\\Documents\\Recipes'          # e.g. C:\\Users\Username\Documents\Recipes
-        self.groceryListDir = os.path.expanduser('~') + '\\Documents\\GroceryLists'          # e.g. C:\\Users\Username\Documents\Recipes
+        self.groceryListDir = os.path.expanduser('~') + '\\Documents\\GroceryLists'          # e.g. C:\\Users\Username\Documents\GroceryLists
 
         self.title = yml['title']
         self.id = yml['id']
@@ -95,6 +95,4 @@ class Recipe:
         outputFile = self.groceryListDir+"\\"+self.title+" Grocery List.pdf"
         pdf.output(outputFile)
         return outputFile
-                
-        #Needs "pip install fpdf" 
 

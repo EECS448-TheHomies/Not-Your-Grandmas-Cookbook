@@ -5,7 +5,7 @@
 import os
 import spoonacular as sp
 import yaml
-from Recipe import Recipe
+from .Recipe import Recipe
 class CookBook:
 
 #Function to look up recipes(Project 4)
@@ -58,19 +58,12 @@ class CookBook:
             response = self.api._make_request(path)
             res = response.json()
             title = res['title'].replace('/','')
-            i = 1
-            while (1):
-                if not os.path.isdir(self.recipeDir + '\\' + title + '.yml'):
-                    with open(self.recipeDir + '\\' + title + '.yml', 'w') as file:
-                        doc = yaml.dump(res, file) 
-                        file.close()
-                        break
-                elif not os.path.isdir(self.recipeDir + title + "(" + str(i) + ").yml"):
-                    with open(self.recipeDir + title + "(" + str(i) + ").yml", 'w') as file:
-                        doc = yaml.dump(res, file) 
-                        file.close()
-                        break
-                i=i+1
-                
-
+            if not os.path.isdir(self.recipeDir + '\\' + title + '.yml'):
+                with open(self.recipeDir + '\\' + title + '.yml', 'w') as file:
+                    doc = yaml.dump(res, file) 
+                    file.close()
+                    break
+            else:
+                break
+               
 
