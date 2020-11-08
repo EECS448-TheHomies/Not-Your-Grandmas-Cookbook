@@ -23,7 +23,11 @@ class RecipeGui(object):
 
     def __init__(self, theme: str, recipeOBJ: Recipe):
         """Sets up the options for the GUI
-        docstring
+        
+        Args:
+            theme (str): Theme of the window to be made.
+            recipeOBJ(str): The data structure containing the data that will be displace 
+
         """
 
         self.titleFont = 'any 25'
@@ -43,8 +47,8 @@ class RecipeGui(object):
         # sg.Print(do_not_reroute_stdout=False)
 
     def collapse(self, layout, key):
-        """
-        Helper function that creates a Column that can be later made hidden, thus appearing "collapsed". Modified from pysimpleGUI cookbook
+        """Helper function that creates a Column that can be later made hidden, thus appearing "collapsed". Modified from pysimpleGUI cookbook
+        
         Args:
             layout: The layout for the section
             key: Key used to make this seciton visible / invisible
@@ -73,9 +77,9 @@ class RecipeGui(object):
 
         # Defines the Ingredients framed element
         tree_ingredients = sg.TreeData()
-        print(self.recipe.ingredients)
+        # print(self.recipe.ingredients)
         for i in range(len(self.recipe.ingredients)):
-            print(self.recipe.ingredients[i])
+            # print(self.recipe.ingredients[i])
             tree_ingredients.Insert(
                 '', str(i), self.recipe.ingredients[i]['name'], values=[self.recipe.ingredients[i]['amount'], self.recipe.ingredients[i]['unit']])
 
@@ -161,7 +165,7 @@ class RecipeGui(object):
             if event == sg.WIN_CLOSED or event == 'Close':  # if user closes window or clicks cancel
                 break
             elif event == 'New Timer':
-                print("Make a new Timer")
+                # print("Make a new Timer")
                 t = TimerGui(self.theme)
                 t.make_timer_gui()
                 timer_windows.append(t)
@@ -176,14 +180,14 @@ class RecipeGui(object):
                     if self.state_of_instructions[step]:
                         self.state_of_instructions[step] = False
 
-                        print("Hide Step " + str(step))
+                        # print("Hide Step " + str(step))
                         rec_window['--Step:'+str(step)+':SYM--'](SYMBOL_UP)
                         rec_window['--Step:'+str(step)+':TEXT--'](visible=False)
                         rec_window.Refresh()
 
                     else:
                         self.state_of_instructions[step] = True
-                        print("Expand Step " + str(step))
+                        # print("Expand Step " + str(step))
                         rec_window['--Step:'+str(step)+':SYM--'](SYMBOL_DOWN)
                         rec_window['--Step:'+str(step)+':TEXT--'](visible=True)
                         rec_window.Refresh()

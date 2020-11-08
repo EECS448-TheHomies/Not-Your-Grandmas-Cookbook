@@ -1,1 +1,1 @@
-pdoc --html --output-dir doc battleship --force
+pdoc --html --output-dir doc src --force

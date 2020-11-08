@@ -1,5 +1,5 @@
 import PySimpleGUI as sg
-
+import os
 from RecipeGui import RecipeGui
 
 from CookBook import CookBook
@@ -89,7 +89,8 @@ class MainGUI(object):
                   [sg.InputText(key='-recSearch-'), 
                    sg.Radio("local", "r1", default=True,enable_events=True,key='-local-'),sg.Radio("Remote", "r1",enable_events=True, key='-remote-'),sg.Button('Search')],
                   [self.elmRecipe],
-                  [sg.Column(self.colOpen, justification='right')]]
+                  [sg.Column(self.colOpen, justification='right')],
+                  [sg.Button("Test Functionality")]]
 
         # create the "Window"
         self.window = sg.Window('CookBook', layout, finalize=True)
@@ -105,11 +106,13 @@ class MainGUI(object):
             """
             event, values = self.window()
             self.window.Refresh()
-            print(event)
-            print(values)
+            # print(event)
+            # print(values)
 
             if event == sg.WIN_CLOSED or event == 'Exit':  # if user closes window or clicks cancel
                 break
+            elif event == 'Test Functionality':
+                os.system("pytest")
             elif event == '-local-':
                 self.local = True
             elif event == '-remote-':
@@ -117,7 +120,7 @@ class MainGUI(object):
             elif event == 'Search':
                 filtered_recipes = self.getRecipeNameList(
                     values['-recSearch-'])
-                print(filtered_recipes)
+                # print(filtered_recipes)
                 self.elmRecipe(filtered_recipes)
             elif event == '-Dark-':
                 self.setGUITheme("DarkGrey2")
@@ -126,8 +129,8 @@ class MainGUI(object):
             elif event == 'Open':
                 try:
                     for rec in self.cookbook.recipeArr:
-                        print(rec.title)
-                        print(values['-recSelect-'][0])
+                        # print(rec.title)
+                        # print(values['-recSelect-'][0])
                         if values['-recSelect-'][0] == rec.title:
                             newGUI = RecipeGui(self.theme, rec)
                             newGUI.run()

@@ -73,10 +73,18 @@ class TimerGui(object):
         """
         t_m, t_s = divmod(seconds, 60)
         t_h, t_m = divmod(t_m, 60)
-        time_formated = str(t_h)+":"+str(t_m)+":"+str(t_s)
+        time_formated = f"{t_h:02}:{t_m:02}:{t_s:02}"
         return time_formated
 
-    def delta_from_event(self, tw_event):
+    def delta_from_event(self, tw_event:str) -> timedelta:
+        """ converts the event string into the timedelta
+
+        Args: 
+            tw_event: The event string that contains what time the user has requested
+
+        Returns:
+            timedelta: the time delta that has been requedted to update the timer with
+        """
         if tw_event == '+5 min':
             return timedelta(minutes=5)
         elif tw_event == '+1 min':
@@ -93,13 +101,13 @@ class TimerGui(object):
             return timedelta(0)
 
     def event_handle(self, tw_event:str):
-        print(tw_event)
+        # print(tw_event)
         if tw_event == 'Start':
             self.active = True
             self.finish_time = datetime.now() + self.value 
         elif tw_event == 'Pause':
             self.active = False
-        print(self.active)
+        # print(self.active)
 
         delta = self.delta_from_event(tw_event)
             
