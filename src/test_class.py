@@ -3,6 +3,8 @@ import pytest
 import yaml
 from CookBook import CookBook
 from Recipe import Recipe
+from timergui import TimerGui
+from datetime import date, datetime, timedelta
 
 class Test:
         
@@ -10,7 +12,7 @@ class Test:
         """
         Testing init of Recipe
         """
-        with open(os.getcwd() + '\\..\\Recipes\\Chicken Burritos.yml') as file:
+        with open(os.getcwd() + '\\Recipes\\Chicken Burritos.yml') as file:
             yml = yaml.full_load(file)
             file.close()
         rec = Recipe(yml)
@@ -38,7 +40,7 @@ class Test:
         """
         cb = CookBook()
         assert len(cb.recipeArr) == 0
-        cb.loadFile(os.getcwd() + '\\..\\Recipes\\Chicken Burritos.yml')
+        cb.loadFile(os.getcwd() + '\\Recipes\\Chicken Burritos.yml')
         assert len(cb.recipeArr) == 1
         
     def test_4(self):
@@ -46,15 +48,28 @@ class Test:
         Testing printIngredientsPDF
         """
         sz = len(os.listdir(os.path.expanduser('~') + '\\Documents\\GroceryLists'))
-        with open(os.getcwd() + '\\..\\Recipes\\Chicken Burritos.yml') as file:
+        with open(os.getcwd() + '\\Recipes\\Chicken Burritos.yml') as file:
             yml = yaml.full_load(file)
             file.close()
         rec = Recipe(yml)
-        rec.printIngredientsPDF()
+        file = rec.printIngredientsPDF()
         assert sz+1 == len(os.listdir(os.path.expanduser('~') + '\\Documents\\GroceryLists'))
+        if os.path.exists(file):
+            os.remove(file)
 
 
 
+    def test_5(self):
+        """
+        Testing the time function of the timer gui
+        """
+        timer = TimerGui("Black")
+        assert timer.delta_from_event('+5 min') == timedelta(minutes=5)
+        assert timer.delta_from_event('+1 min') == timedelta(minutes=1)
+        assert timer.delta_from_event('+30 sec') == timedelta(seconds=30)
+        assert timer.delta_from_event('-5 min') == timedelta(minutes=-5)
+        assert timer.delta_from_event('-1 min') == timedelta(minutes=-1)
+        assert timer.delta_from_event('-30 sec') == timedelta(seconds=-30)
 
 
 
