@@ -1,12 +1,7 @@
 #author Thomas Atkins and Edwin Recinos
 #originally set up to run the script that would pull up the timer
-from threading import Timer
-from time import time
 import PySimpleGUI as sg
-from datetime import date, datetime, timedelta
-from PySimpleGUI.PySimpleGUI import _FindElementWithFocusInSubForm
-
-from requests.models import MissingSchema 
+from datetime import datetime, timedelta 
 
 """Timer Overview
 
@@ -34,11 +29,9 @@ class TimerGui(object):
             """
 
             self.width = 50
+
             self.theme = theme
 
-            self.finish_time = datetime.now() + timedelta(minutes=5)
-            self.value = self.finish_time - datetime.now()
-            self.active = False
             
 
             # Theme
@@ -60,6 +53,8 @@ class TimerGui(object):
             [sg.Button('Start'),  sg.Button('Pause')]
         ]
        
+        self.time_count = datetime.now() + timedelta(minutes=5)
+        self.time_timr = True
         self.gui = sg.Window('FOOD TIME!', layout, finalize=True)
 
     def format_time(self, seconds:int)->str:
@@ -71,52 +66,81 @@ class TimerGui(object):
         Returns:
             str: the formatted string to display on the timer
         """
+        print(seconds)
         t_m, t_s = divmod(seconds, 60)
         t_h, t_m = divmod(t_m, 60)
-        time_formated = str(t_h)+":"+str(t_m)+":"+str(t_s)
+        time_formated = f"{t_h:02}:{t_m:02}:{t_s:02}"
         return time_formated
 
-    def delta_from_event(self, tw_event):
+
+    
+
+    def updateTimeON(self,min:int = 0 , sec:int = 0):
+        self.time_count += timedelta(minutes=min,seconds=sec)
+    
+    def updateTimeOFF(self,min:int = 0 , sec:int = 0):
+        self.timeLeft += timedelta(minutes=min,seconds=sec)
+
+
+    def eventTimerOff(self,tw_event:str):
         if tw_event == '+5 min':
-            return timedelta(minutes=5)
+            self.updateTimeOFF(min=5)
+
         elif tw_event == '+1 min':
-            return timedelta(minutes=1)
+            self.updateTimeOFF(min=1)
+
         elif tw_event == '+30 sec':
-            return timedelta(seconds=30)
+            self.updateTimeOFF(sec=30)
+
         elif tw_event == '-5 min':
-            return timedelta(minutes=-5)
+            self.updateTimeOFF(min=-5)
+
         elif tw_event == '-1 min':
-            return timedelta(minutes=-1)
+            self.updateTimeOFF(min=-1)
+
         elif tw_event == '-30 sec':
-            return timedelta(seconds=-30)
-        else:
-            return timedelta(0)
+            self.updateTimeOFF(sec=-30)
 
-    def event_handle(self, tw_event:str):
-        print(tw_event)
-        if tw_event == 'Start':
-            self.active = True
-            self.finish_time = datetime.now() + self.value 
-        elif tw_event == 'Pause':
-            self.active = False
-        print(self.active)
-
-        delta = self.delta_from_event(tw_event)
-            
-        if self.active:         
-            if self.finish_time - datetime.now() < delta:
-                self.finish_time = datetime.now()
-                self.value = timedelta(0)
-            else:
-                self.finish_time += delta
-                self.value = self.finish_time - datetime.now()
-        else:
-            if delta > self.value:
-                self.value = timedelta(0)
-            self.value += self.delta_from_event(tw_event)
-
-        if self.value == timedelta(0):
-            self.active=False
-
-        time_formated = self.format_time(self.value.seconds)
+        if self.timeLeft.seconds >= 85000 :
+            self.timeLeft.seconds = 0
+        time_formated = self.format_time(self.timeLeft.seconds)
         self.gui['--time--'](time_formated)
+
+    def eventTimerOn(self,tw_event:str):
+        if tw_event == '+5 min':
+            self.updateTimeON(min=5)
+
+        elif tw_event == '+1 min':
+            self.updateTimeON(min=1)
+
+        elif tw_event == '+30 sec':
+            self.updateTimeON(sec=30)
+
+        elif tw_event == '-5 min':
+            self.updateTimeON(min=-5)
+
+        elif tw_event == '-1 min':
+            self.updateTimeON(min=-1)
+
+        elif tw_event == '-30 sec':
+            self.updateTimeON(sec=-30)
+
+
+        self.timeLeft = self.time_count - datetime.now()
+        if self.timeLeft.seconds >= 85000 :
+            self.timeLeft.seconds = 0
+        time_formated = self.format_time(self.timeLeft.seconds)
+        self.gui['--time--'](time_formated)
+
+
+    def eventHandel(self, tw_event:str):
+        if tw_event == 'Start':
+            self.time_timr = True
+            self.time_count = datetime.now() + self.timeLeft
+        elif tw_event == 'Pause':
+            self.time_timr = False
+
+        if  self.time_timr == True:         
+            self.eventTimerOn(tw_event)
+        else:
+           self.eventTimerOff(tw_event)
