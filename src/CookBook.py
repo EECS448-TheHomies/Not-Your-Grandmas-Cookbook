@@ -19,8 +19,9 @@ class CookBook:
             os.makedirs(self.recipeDir)
 
     def loadFile(self,fileLoc):
-    
-    # loadFile takes the location to a .yaml file in the form of a string
+        """
+        Loads all locally stored recipes at once
+        """
     
         with open(fileLoc) as file:
             yml = yaml.full_load(file)
@@ -57,9 +58,19 @@ class CookBook:
             response = self.api._make_request(path)
             res = response.json()
             title = res['title'].replace('/','')
-            with open(self.recipeDir + '\\' + title + '.yml', 'w') as file:
-                doc = yaml.dump(res, file) 
-                file.close()
+            i = 1
+            while (1):
+                if not os.path.isdir(self.recipeDir + '\\' + title + '.yml'):
+                    with open(self.recipeDir + '\\' + title + '.yml', 'w') as file:
+                        doc = yaml.dump(res, file) 
+                        file.close()
+                        break
+                elif not os.path.isdir(self.recipeDir + title + "(" + str(i) + ").yml"):
+                    with open(self.recipeDir + title + "(" + str(i) + ").yml", 'w') as file:
+                        doc = yaml.dump(res, file) 
+                        file.close()
+                        break
+                i=i+1
                 
 
 
