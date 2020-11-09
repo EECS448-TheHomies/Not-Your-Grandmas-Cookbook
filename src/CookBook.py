@@ -62,8 +62,6 @@ class CookBook:
                 with open(self.recipeDir + '\\' + title + '.yml', 'w') as file:
                     doc = yaml.dump(res, file) 
                     file.close()
-                    break
             else:
                 break
-               
-
+                
