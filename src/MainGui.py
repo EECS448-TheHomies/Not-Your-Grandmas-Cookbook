@@ -116,7 +116,10 @@ class MainGUI(object):
             if event == sg.WIN_CLOSED or event == 'Exit':  # if user closes window or clicks cancel
                 break
             elif event == 'Test Functionality':
+                sg.Print(do_not_reroute_stdout=False)
                 os.system("pytest")
+                sg.Print(do_not_reroute_stdout=True)
+
             elif event == '-local-':
                 self.local = True
             elif event == '-remote-':

@@ -15,7 +15,7 @@ class Test:
         with open(os.getcwd() + '\\Recipes\\Chicken Burritos.yml') as file:
             yml = yaml.full_load(file)
             file.close()
-        rec = Recipe(yml)
+        rec = Recipe(yml, fromAPI=True)
         assert rec.title == yml['title']
         assert rec.id == yml['id']
         assert rec.time == yml['readyInMinutes']
@@ -40,7 +40,7 @@ class Test:
         """
         cb = CookBook()
         assert len(cb.recipeArr) == 0
-        cb.loadFile(os.getcwd() + '\\Recipes\\Chicken Burritos.yml')
+        cb.loadFile(os.getcwd() + '\\Recipes\\Chicken Burritos.yml',fromAPI=True)
         assert len(cb.recipeArr) == 1
         
     def test_4(self):
@@ -51,7 +51,7 @@ class Test:
         with open(os.getcwd() + '\\Recipes\\Chicken Burritos.yml') as file:
             yml = yaml.full_load(file)
             file.close()
-        rec = Recipe(yml)
+        rec = Recipe(yml,fromAPI=True)
         file = rec.printIngredientsPDF()
         assert sz+1 == len(os.listdir(os.path.expanduser('~') + '\\Documents\\GroceryLists'))
         if os.path.exists(file):

@@ -22,14 +22,14 @@ class CookBook:
         if not os.path.isdir(self.recipeAPIDir):
             os.makedirs(self.recipeAPIDir)
 
-    def loadFile(self,fileLoc):
+    def loadFile(self,fileLoc, fromAPI=False):
         """
         Loads all locally stored recipes at once
         """
     
         with open(fileLoc) as file:
             yml = yaml.full_load(file)
-            recipeName = Recipe(yml)
+            recipeName = Recipe(yml,fromAPI=fromAPI)
             file.close()
 
         self.recipeArr.append(recipeName)
@@ -42,7 +42,8 @@ class CookBook:
                     self.recipeArr.append(Recipe(yml,fromAPI=True))
                     file.close()
             except:
-                os.remove(self.recipeAPIDir + '\\' + filename)
+                pass
+                # os.remove(self.recipeAPIDir + '\\' + filename)
 
         for filename in os.listdir(self.recipeDir):
             try:
