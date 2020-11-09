@@ -43,30 +43,50 @@ class Recipe:
     # Constructor that creates an empty recipe
         if fromAPI:
             self.recipeDir = os.path.expanduser('~') + '\\Documents\\APIRecipes'          # e.g. C:\\Users\Username\Documents\Recipes
+
+            self.title = yml['title']
+            self.id = yml['id']
+            # self.time = yml['readyInMinutes']
+            self.servings = yml['servings']
+            self.sourceName = yml['sourceName']
+            self.URL = yml['sourceUrl']
+            # self.image = yml['image']
+            
+            soup = BeautifulSoup(yml['summary'], features='html.parser')                    # the BeautifulSoup library removes HTML tags from text
+            self.summary = soup.get_text()
+            self.ingredients = []                                   # this will be a list of dictionaries that will contain details on the ingredients
+            soup = BeautifulSoup(yml['instructions'], features='html.parser')
+            instructions = soup.get_text('\n')
+            self.instructions = instructions.splitlines()                                  # this will be a list of strings
+            
+            for i in range(len(yml['extendedIngredients'])):
+                name = yml['extendedIngredients'][i]['name']
+                amount = str(yml['extendedIngredients'][i]['measures']['us']['amount'])
+                unit = yml['extendedIngredients'][i]['measures']['us']['unitShort']
+                self.ingredients.append({"name":name, "amount":amount, "unit": unit})
         else:
             self.recipeDir = os.path.expanduser('~') + '\\Documents\\Recipes'          # e.g. C:\\Users\Username\Documents\Recipes
+            self.title = yml['title']
+            self.id = yml['id']
+            self.servings = yml['servings']
+            self.sourceName = yml['sourceName']
+            self.URL = yml['sourceUrl']
+            self.summary = yml['summary']
+            
+
+            self.instructions=yml['instructions']
+            
+            self.ingredients = []
+
+            for item in yml['ingredients']:
+                self.ingredients.append({"name":item['name'], "amount":item['amount'], "unit": item['unit']})
+
+
+
 
         self.groceryListDir = os.path.expanduser('~') + '\\Documents\\GroceryLists'          # e.g. C:\\Users\Username\Documents\GroceryLists
 
-        self.title = yml['title']
-        self.id = yml['id']
-        self.time = yml['readyInMinutes']
-        self.servings = yml['servings']
-        self.sourceName = yml['sourceName']
-        self.URL = yml['sourceUrl']
-        self.image = yml['image']
-        soup = BeautifulSoup(yml['summary'], features='html.parser')                    # the BeautifulSoup library removes HTML tags from text
-        self.summary = soup.get_text()
-        self.ingredients = []                                   # this will be a list of dictionaries that will contain details on the ingredients
-        soup = BeautifulSoup(yml['instructions'], features='html.parser')
-        instructions = soup.get_text('\n')
-        self.instructions = instructions.splitlines()                                  # this will be a list of strings
         
-        for i in range(len(yml['extendedIngredients'])):
-            name = yml['extendedIngredients'][i]['name']
-            amount = str(yml['extendedIngredients'][i]['measures']['us']['amount'])
-            unit = yml['extendedIngredients'][i]['measures']['us']['unitShort']
-            self.ingredients.append({"name":name, "amount":amount, "unit": unit})
         
     # Setter methods to assign values to member variables after construction
         
