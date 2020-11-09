@@ -32,7 +32,7 @@ class Test:
         """
         cb = CookBook()
         cb.loadAllRecipes()
-        assert len(cb.recipeArr) == len(os.listdir(os.path.expanduser('~') + '\\Documents\\Recipes'))
+        assert len(cb.recipeArr) == len(os.listdir(os.path.expanduser('~') + '\\Documents\\Recipes')) + len(os.listdir(os.path.expanduser('~') + '\\Documents\\APIRecipes'))
     
     def test_3(self):
         """
