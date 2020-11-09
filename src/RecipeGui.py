@@ -74,8 +74,7 @@ class RecipeGui(object):
             [sg.T(textwrap.fill(self.recipe.summary, self.width), font=self.bodyFont)],
             [sg.Text('_'*(self.width-18), font=self.bodyFont)]
         ]
-        print(self.recipe.URL)
-        print(self.recipe.sourceName)
+
         source_layout = [
             [sg.Text('Source', font=self.subSectionFont, enable_events=True)],
             [sg.T(self.recipe.sourceName +": "+ self.recipe.URL, font=self.bodyFont)],

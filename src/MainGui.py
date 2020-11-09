@@ -69,7 +69,6 @@ class MainGUI(object):
         # Dedublicate the list
         namesOfRecipes = list(set(namesOfRecipes))
         
-        print(namesOfRecipes)
 
         return namesOfRecipes
 

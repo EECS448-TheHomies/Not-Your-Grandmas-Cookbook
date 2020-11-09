@@ -1,0 +1,31 @@
+title: "Penne Pasta"
+
+time: 20
+
+servings: 4
+
+summary: "Penne Pasta is a delicious dish for the whole family"
+
+ingredients: 
+    - name: "Penne noodles"
+      amount: 1
+      unit: "Box"
+    - name: "Sause"
+      amount: 1
+      unit: "Jar"
+    - name: "Garlic Bread"
+      amount: 2
+      unit: "Loafs"
+
+instructions: 
+    - "Preheat oven to 350"
+    - "Start to boil a pot of water"
+    - "When oven is preheated, put the garlic bread in for 15 minutes"
+    - "Once the water is boiling, put the noodles' in to the water for 10-15 minutes with occasional stirring"
+    - "Warm the Sause up in a second pot on a low temperature, stir occasionally till noodles' are done"
+    - "Strain the noodles' once they are a desirable firmness."
+    - "Add Sause and a slice of garlic bread and enjoy"
+
+sourceName: 'Local'
+sourceUrl: ''
+id: 0
