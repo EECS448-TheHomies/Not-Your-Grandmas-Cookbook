@@ -74,6 +74,13 @@ class RecipeGui(object):
             [sg.T(textwrap.fill(self.recipe.summary, self.width), font=self.bodyFont)],
             [sg.Text('_'*(self.width-18), font=self.bodyFont)]
         ]
+        print(self.recipe.URL)
+        print(self.recipe.sourceName)
+        source_layout = [
+            [sg.Text('Source', font=self.sectionFont, enable_events=True)],
+            [sg.T(self.recipe.sourceName +": "+ self.recipe.URL, font=self.bodyFont)],
+            [sg.Text('_'*(self.width-18), font=self.bodyFont)]
+        ]
 
         # Defines the Ingredients framed element
         tree_ingredients = sg.TreeData()
@@ -135,6 +142,7 @@ class RecipeGui(object):
         layout = [[sg.Text(self.recipe.title, font=self.titleFont)]]
         layout += button_layout
         layout += summary_layout
+        layout += source_layout
         layout += ingredients_layout
         layout += instructions_layout
         layout += [[sg.Button('Close')]]
