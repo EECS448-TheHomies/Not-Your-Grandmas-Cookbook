@@ -27,7 +27,7 @@ class MainGUI(object):
         
         self.cookbook = CookBook()
         
-
+        self.cookbook.remove_APIrecipes
         self.cookbook.loadAllRecipes()
 
 

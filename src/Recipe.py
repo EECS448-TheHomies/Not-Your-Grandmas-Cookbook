@@ -22,7 +22,7 @@ class Recipe:
  
 
     """
-    def __init__(self, yml):
+    def __init__(self, yml, fromAPI = False):
         """This constructor takes in a Yaml object, serialization
         
         Variables: 
@@ -41,8 +41,11 @@ class Recipe:
         """
 
     # Constructor that creates an empty recipe
-    
-        self.recipeDir = os.path.expanduser('~') + '\\Documents\\Recipes'          # e.g. C:\\Users\Username\Documents\Recipes
+        if fromAPI:
+            self.recipeDir = os.path.expanduser('~') + '\\Documents\\APIRecipes'          # e.g. C:\\Users\Username\Documents\Recipes
+        else:
+            self.recipeDir = os.path.expanduser('~') + '\\Documents\\Recipes'          # e.g. C:\\Users\Username\Documents\Recipes
+
         self.groceryListDir = os.path.expanduser('~') + '\\Documents\\GroceryLists'          # e.g. C:\\Users\Username\Documents\GroceryLists
 
         self.title = yml['title']
@@ -66,6 +69,8 @@ class Recipe:
             self.ingredients.append({"name":name, "amount":amount, "unit": unit})
         
     # Setter methods to assign values to member variables after construction
+        
+
         
     def printIngredientsPDF(self):
         """
