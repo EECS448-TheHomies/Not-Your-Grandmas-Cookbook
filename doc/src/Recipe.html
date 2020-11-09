@@ -35,30 +35,26 @@
 # Each individual recipe object will have its own directory stored in the recipes directory of our project folder
 
 import os
-from .Ingredient import Ingredient
+import spoonacular
 import yaml
+from bs4 import BeautifulSoup
+import fpdf
 
 class Recipe:
     
     &#34;&#34;&#34;Recipe stores recipe elements
-    Constructor count: 4
         def __init__(self): This sets variables within the class to be set to blank, when user wants to manually add ingredients
-        def init0(....): is used for project 4 where we will add the integration of an API
-        def init1(...): is used before the integration of the API, this will take 
-        def init2(...): is a constructor used in serialization
-
 
     Setters:
         Setter methods to set id, time, servings, url, image, summary, ingredients and the instructions
  
 
     &#34;&#34;&#34;
-    def __init__(self):
-        &#34;&#34;&#34;This constructor starts a blank Recipe object, all variables set to blank
-        These will be filled in by using the setter methods defined below the constructor, init methods
+    def __init__(self, yml):
+        &#34;&#34;&#34;This constructor takes in a Yaml object, serialization
         
         Variables: 
-            path (str): str holding a path name
+            recipeDir (str): str holding a path name
             title (str): string that says title of recipe
             id (int): int holding id number of recipe
             time(int): int holding the time it would take to cook
@@ -74,197 +70,59 @@ class Recipe:
 
     # Constructor that creates an empty recipe
     
-        self.path = &#34;&#34;                                          # e.g. C:\\Users\Username\ProgramFiles\Project3Folder\recipes\&#34;cake recipe&#34;
-        self.title = &#34;&#34;
-        self.id = &#34;&#34;
-        self.time = &#34;&#34;
-        self.servings = &#34;&#34;
-        self.URL = &#34;&#34;
-        self.image = &#34;&#34;
-        self.summary = &#34;&#34;
+        self.recipeDir = os.path.expanduser(&#39;~&#39;) + &#39;\\Documents\\Recipes&#39;          # e.g. C:\\Users\Username\Documents\Recipes
+        self.groceryListDir = os.path.expanduser(&#39;~&#39;) + &#39;\\Documents\\GroceryLists&#39;          # e.g. C:\\Users\Username\Documents\GroceryLists
+
+        self.title = yml[&#39;title&#39;]
+        self.id = yml[&#39;id&#39;]
+        self.time = yml[&#39;readyInMinutes&#39;]
+        self.servings = yml[&#39;servings&#39;]
+        self.URL = yml[&#39;sourceUrl&#39;]
+        self.image = yml[&#39;image&#39;]
+        soup = BeautifulSoup(yml[&#39;summary&#39;], features=&#39;html.parser&#39;)                    # the BeautifulSoup library removes HTML tags from text
+        self.summary = soup.get_text()
         self.ingredients = []                                   # this will be a list of dictionaries that will contain details on the ingredients
-        self.instructions = []                                  # this will be a list of strings
+        soup = BeautifulSoup(yml[&#39;instructions&#39;], features=&#39;html.parser&#39;)
+        instructions = soup.get_text(&#39;\n&#39;)
+        self.instructions = instructions.splitlines()                                  # this will be a list of strings
         
-    def init0(self, title, id, time, servings, URL, image, summary, ingredients, instructions):
-    
-        &#34;&#34;&#34;This constructor is the post API integration, project 4 ready
-
-        Arguments: 
-            title (str): string that says title of recipe
-            id (int):  int holding id number of recipe
-            time(int): int holding the time it would take to cook
-            servings (int): int that says servings made
-            URL (str): string holding URL info
-            image (str): holds string to path showing image of food
-            summary (str): holds summary of food being made
-            ingredients (str array): array holding the ingredients used in food 
-            instructions (str array): array holding the instructions to make the food
-        
-        &#34;&#34;&#34;
-    # initializer for when we know all elements of the recipe (post API)
-    
-        self.title = title
-        self.id = id
-        self.time = time
-        self.servings = servings
-        self.URL = URL
-        self.image = image
-        self.summary = summary
-        self.ingredients = ingredients
-        self.instructions = instructions
-
-    def init1(self, title, time, servings, summary, ingredients, instructions):
-        &#34;&#34;&#34;This constructor takes in arguments from when object is made
-
-        Arguments: 
-            title (str): string that says title of recipe
-            time(int): int holding the time it would take to cook
-            servings (int): int that says servings made
-            summary (str): holds summary of food being made
-            ingredients (str array): array holding the ingredients used in food 
-            instructions (str array): array holding the instructions to make the food
-        
-        &#34;&#34;&#34;
-    
-    # initializer for when we only know some elements of the recipe (pre API)
-        
-        self.title = title
-        self.time = time
-        self.servings = servings
-        self.summary = summary
-        self.ingredients = ingredients
-        self.instructions = instructions
-        
-    def init2(self, yml):        
-        &#34;&#34;&#34;This constructor takes in a Yaml object, serialization
-
-        Constructor sets self.variables: 
-            title (str): string that says title of recipe
-            summary (str): holds summary of food being made
-            servings (int): int that says servings made
-            ingredients (str array): array holding the ingredients used in food 
-            instructions (str array): array holding the instructions to make the food
-        
-        &#34;&#34;&#34;                                          
-    
-    # Initializer that takes a yaml object
-    # pass in the object that was read from the yaml file
-    
-        self.title = yml[&#34;title&#34;]
-        self.summary = yml[&#34;summary&#34;]
-        self.servings = yml[&#34;servings&#34;]
-        self.ingredients = yml[&#34;ingredients&#34;]                              # a dictionary with the indexes of &#34;name&#34;, &#34;amount&#34;, &amp; &#34;unit&#34;
-        self.instructions = yml[&#34;instructions&#34;]                            # a list of strings, each index is a separate step
-        i = 1
+        for i in range(len(yml[&#39;extendedIngredients&#39;])):
+            name = yml[&#39;extendedIngredients&#39;][i][&#39;name&#39;]
+            amount = str(yml[&#39;extendedIngredients&#39;][i][&#39;measures&#39;][&#39;us&#39;][&#39;amount&#39;])
+            unit = yml[&#39;extendedIngredients&#39;][i][&#39;measures&#39;][&#39;us&#39;][&#39;unitShort&#39;]
+            self.ingredients.append({&#34;name&#34;:name, &#34;amount&#34;:amount, &#34;unit&#34;: unit})
         
     # Setter methods to assign values to member variables after construction
-    
-    def setTitle(self, title):
-        &#34;&#34;&#34;
-        Argument: title (str)
-        Action: title setter
-        &#34;&#34;&#34;
-        self.title = title
-        i = 1
-        while (1):
-            if not os.path.isdir(self.recipeDir + title):
-                os.rename(r&#34;&#34; + self.path, r&#34;&#34; + self.recipeDir + title)
-                self.path = self.recipeDir + title
-                break
-            elif not os.path.isdir(self.recipeDir + title + &#34;(&#34; + str(i) + &#34;)&#34;):
-                os.rename(r&#34;&#34; + self.path, r&#34;&#34; + self.recipeDir + title + &#34;(&#34; + str(i) + &#34;)&#34;)
-                self.path = self.recipeDir + title + &#34;(&#34; + str(i) + &#34;)&#34;
-                break
-            i = i+1
-    
-    def setID(self, id):
-        &#34;&#34;&#34;
-        Argument: id (int)
-        Action: function is a setter to set self.id = id (the argument passed in)
-        &#34;&#34;&#34;
-        self.id = id
         
-    def setTime(self, time):
+    def printIngredientsPDF(self):
         &#34;&#34;&#34;
-        Argument: time (int)
-        Action: function is a setter to set self.time = time (the argument passed in)
+        Argument: none
+        Action: function that is meant to export a list of ingredients to a PDF.
+                A grocery list.
+        Returns: The path to the new pdf
         &#34;&#34;&#34;
-        self.time = time
-        
-    def setServings(self, servings):
-        &#34;&#34;&#34;
-        Argument: servings (int)
-        Action: function is a setter to set self.servings = servings (the argument passed in)
-        &#34;&#34;&#34;
-        self.servings = servings
-        
-    def setURL(self, url):
-        &#34;&#34;&#34;
-        Argument: url (str)
-        Action: function is a setter to set self.url = url (the argument passed in)
-        &#34;&#34;&#34;
-        self.url = url
-        
-    def setImage(self, image):
-        &#34;&#34;&#34;
-        Argument: image (str)
-        Action: function is a setter to set self.image = image (the argument passed in)
-        &#34;&#34;&#34;
-    # contains the path to the image file
-        self.image = image
-        
-    def setSummary(self, summary):
-        &#34;&#34;&#34;
-        Argument: summary (str)
-        Action: function is a setter to set self.summary = summary (the argument passed in)
-        &#34;&#34;&#34;
-        self.summary = summary
-        
-    # needs to be passed a list
-    def setIngredients(self, ingredients):
-        &#34;&#34;&#34;
-        Argument: ingredients (str)
-        Action: function is a setter to set self.ingredients = ingredients (the argument passed in)
-        &#34;&#34;&#34;
-        self.ingredients = ingredients
-        
-    # needs to be passed a list
-    def setInstructions(self, instructions):
-        &#34;&#34;&#34;
-        Argument: instructions (str)
-        Action: function is a setter to set self.instructions = instructions (the argument passed in)
-        &#34;&#34;&#34;
-        self.instructions = instructions
-        
-    def addIngredient(ingr):
-        &#34;&#34;&#34;
-        Argument: ingr (id)
-        Action: function that adds ingredient
-        &#34;&#34;&#34;
-        self.ingredients.append(ingr)
-        
-    def removeIngredient(ingr):
-        &#34;&#34;&#34;
-        Argument: ingr (int)
-        Action: function that removes ingredient
-        &#34;&#34;&#34;
-        self.ingredients.remove(ingr)
-        
-    def addStep(pos, step):
-        &#34;&#34;&#34;
-        Arguments: pos (int), step (int)
-        Action: function that takes position number and step number of where the new instruction should be added
-        &#34;&#34;&#34;
-        self.instructions.insert(pos, step)
-        
-    def removeStep(pos):
-        &#34;&#34;&#34;
-        Argument: pos (int)
-        Action: function that removes a step in the instructions
-        &#34;&#34;&#34;
-        self.instructions.delete(pos)
-        
-   </code></pre>
+
+        pdf=fpdf.FPDF(format=&#39;letter&#39;)
+        pdf.add_page()
+        pdf.set_font(&#34;Arial&#34;,&#39;BU&#39;, size=30)
+        pdf.write(20,str(&#34;Grocery List For: &#34;+ self.title))
+        pdf.ln()
+
+        pdf.set_font(&#34;Arial&#34;, size=14)
+
+        for i in range(len(self.ingredients)):
+            
+            pdf.cell(w=4,h=5,border=1)
+            pdf.write(6,self.ingredients[i][&#39;name&#39;] + &#34;:\t&#34; +self.ingredients[i][&#39;amount&#39;] + &#34; &#34; +  self.ingredients[i][&#39;unit&#39;])
+
+            # pdf.write(6,str(self.ingredients[i]))
+            pdf.ln()
+
+        if not os.path.isdir(self.groceryListDir):
+            os.makedirs(self.groceryListDir)
+        outputFile = self.groceryListDir+&#34;\\&#34;+self.title+&#34; Grocery List.pdf&#34;
+        pdf.output(outputFile)
+        return outputFile</code></pre>
 </details>
 </section>
 <section>
@@ -278,20 +136,16 @@ class Recipe:
 <dl>
 <dt id="src.Recipe.Recipe"><code class="flex name class">
 <span>class <span class="ident">Recipe</span></span>
+<span>(</span><span>yml)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Recipe stores recipe elements
-Constructor count: 4
-def <strong>init</strong>(self): This sets variables within the class to be set to blank, when user wants to manually add ingredients
-def init0(....): is used for project 4 where we will add the integration of an API
-def init1(&hellip;): is used before the integration of the API, this will take
-def init2(&hellip;): is a constructor used in serialization</p>
+def <strong>init</strong>(self): This sets variables within the class to be set to blank, when user wants to manually add ingredients</p>
 <h2 id="setters">Setters</h2>
 <p>Setter methods to set id, time, servings, url, image, summary, ingredients and the instructions</p>
-<p>This constructor starts a blank Recipe object, all variables set to blank
-These will be filled in by using the setter methods defined below the constructor, init methods</p>
+<p>This constructor takes in a Yaml object, serialization</p>
 <p>Variables:
-path (str): str holding a path name
+recipeDir (str): str holding a path name
 title (str): string that says title of recipe
 id (int): int holding id number of recipe
 time(int): int holding the time it would take to cook
@@ -308,24 +162,18 @@ instructions (str array): array holding the instructions to make the food</p></d
 <pre><code class="python">class Recipe:
     
     &#34;&#34;&#34;Recipe stores recipe elements
-    Constructor count: 4
         def __init__(self): This sets variables within the class to be set to blank, when user wants to manually add ingredients
-        def init0(....): is used for project 4 where we will add the integration of an API
-        def init1(...): is used before the integration of the API, this will take 
-        def init2(...): is a constructor used in serialization
-
 
     Setters:
         Setter methods to set id, time, servings, url, image, summary, ingredients and the instructions
  
 
     &#34;&#34;&#34;
-    def __init__(self):
-        &#34;&#34;&#34;This constructor starts a blank Recipe object, all variables set to blank
-        These will be filled in by using the setter methods defined below the constructor, init methods
+    def __init__(self, yml):
+        &#34;&#34;&#34;This constructor takes in a Yaml object, serialization
         
         Variables: 
-            path (str): str holding a path name
+            recipeDir (str): str holding a path name
             title (str): string that says title of recipe
             id (int): int holding id number of recipe
             time(int): int holding the time it would take to cook
@@ -341,568 +189,103 @@ instructions (str array): array holding the instructions to make the food</p></d
 
     # Constructor that creates an empty recipe
     
-        self.path = &#34;&#34;                                          # e.g. C:\\Users\Username\ProgramFiles\Project3Folder\recipes\&#34;cake recipe&#34;
-        self.title = &#34;&#34;
-        self.id = &#34;&#34;
-        self.time = &#34;&#34;
-        self.servings = &#34;&#34;
-        self.URL = &#34;&#34;
-        self.image = &#34;&#34;
-        self.summary = &#34;&#34;
+        self.recipeDir = os.path.expanduser(&#39;~&#39;) + &#39;\\Documents\\Recipes&#39;          # e.g. C:\\Users\Username\Documents\Recipes
+        self.groceryListDir = os.path.expanduser(&#39;~&#39;) + &#39;\\Documents\\GroceryLists&#39;          # e.g. C:\\Users\Username\Documents\GroceryLists
+
+        self.title = yml[&#39;title&#39;]
+        self.id = yml[&#39;id&#39;]
+        self.time = yml[&#39;readyInMinutes&#39;]
+        self.servings = yml[&#39;servings&#39;]
+        self.URL = yml[&#39;sourceUrl&#39;]
+        self.image = yml[&#39;image&#39;]
+        soup = BeautifulSoup(yml[&#39;summary&#39;], features=&#39;html.parser&#39;)                    # the BeautifulSoup library removes HTML tags from text
+        self.summary = soup.get_text()
         self.ingredients = []                                   # this will be a list of dictionaries that will contain details on the ingredients
-        self.instructions = []                                  # this will be a list of strings
+        soup = BeautifulSoup(yml[&#39;instructions&#39;], features=&#39;html.parser&#39;)
+        instructions = soup.get_text(&#39;\n&#39;)
+        self.instructions = instructions.splitlines()                                  # this will be a list of strings
         
-    def init0(self, title, id, time, servings, URL, image, summary, ingredients, instructions):
-    
-        &#34;&#34;&#34;This constructor is the post API integration, project 4 ready
-
-        Arguments: 
-            title (str): string that says title of recipe
-            id (int):  int holding id number of recipe
-            time(int): int holding the time it would take to cook
-            servings (int): int that says servings made
-            URL (str): string holding URL info
-            image (str): holds string to path showing image of food
-            summary (str): holds summary of food being made
-            ingredients (str array): array holding the ingredients used in food 
-            instructions (str array): array holding the instructions to make the food
-        
-        &#34;&#34;&#34;
-    # initializer for when we know all elements of the recipe (post API)
-    
-        self.title = title
-        self.id = id
-        self.time = time
-        self.servings = servings
-        self.URL = URL
-        self.image = image
-        self.summary = summary
-        self.ingredients = ingredients
-        self.instructions = instructions
-
-    def init1(self, title, time, servings, summary, ingredients, instructions):
-        &#34;&#34;&#34;This constructor takes in arguments from when object is made
-
-        Arguments: 
-            title (str): string that says title of recipe
-            time(int): int holding the time it would take to cook
-            servings (int): int that says servings made
-            summary (str): holds summary of food being made
-            ingredients (str array): array holding the ingredients used in food 
-            instructions (str array): array holding the instructions to make the food
-        
-        &#34;&#34;&#34;
-    
-    # initializer for when we only know some elements of the recipe (pre API)
-        
-        self.title = title
-        self.time = time
-        self.servings = servings
-        self.summary = summary
-        self.ingredients = ingredients
-        self.instructions = instructions
-        
-    def init2(self, yml):        
-        &#34;&#34;&#34;This constructor takes in a Yaml object, serialization
-
-        Constructor sets self.variables: 
-            title (str): string that says title of recipe
-            summary (str): holds summary of food being made
-            servings (int): int that says servings made
-            ingredients (str array): array holding the ingredients used in food 
-            instructions (str array): array holding the instructions to make the food
-        
-        &#34;&#34;&#34;                                          
-    
-    # Initializer that takes a yaml object
-    # pass in the object that was read from the yaml file
-    
-        self.title = yml[&#34;title&#34;]
-        self.summary = yml[&#34;summary&#34;]
-        self.servings = yml[&#34;servings&#34;]
-        self.ingredients = yml[&#34;ingredients&#34;]                              # a dictionary with the indexes of &#34;name&#34;, &#34;amount&#34;, &amp; &#34;unit&#34;
-        self.instructions = yml[&#34;instructions&#34;]                            # a list of strings, each index is a separate step
-        i = 1
+        for i in range(len(yml[&#39;extendedIngredients&#39;])):
+            name = yml[&#39;extendedIngredients&#39;][i][&#39;name&#39;]
+            amount = str(yml[&#39;extendedIngredients&#39;][i][&#39;measures&#39;][&#39;us&#39;][&#39;amount&#39;])
+            unit = yml[&#39;extendedIngredients&#39;][i][&#39;measures&#39;][&#39;us&#39;][&#39;unitShort&#39;]
+            self.ingredients.append({&#34;name&#34;:name, &#34;amount&#34;:amount, &#34;unit&#34;: unit})
         
     # Setter methods to assign values to member variables after construction
-    
-    def setTitle(self, title):
-        &#34;&#34;&#34;
-        Argument: title (str)
-        Action: title setter
-        &#34;&#34;&#34;
-        self.title = title
-        i = 1
-        while (1):
-            if not os.path.isdir(self.recipeDir + title):
-                os.rename(r&#34;&#34; + self.path, r&#34;&#34; + self.recipeDir + title)
-                self.path = self.recipeDir + title
-                break
-            elif not os.path.isdir(self.recipeDir + title + &#34;(&#34; + str(i) + &#34;)&#34;):
-                os.rename(r&#34;&#34; + self.path, r&#34;&#34; + self.recipeDir + title + &#34;(&#34; + str(i) + &#34;)&#34;)
-                self.path = self.recipeDir + title + &#34;(&#34; + str(i) + &#34;)&#34;
-                break
-            i = i+1
-    
-    def setID(self, id):
-        &#34;&#34;&#34;
-        Argument: id (int)
-        Action: function is a setter to set self.id = id (the argument passed in)
-        &#34;&#34;&#34;
-        self.id = id
         
-    def setTime(self, time):
+    def printIngredientsPDF(self):
         &#34;&#34;&#34;
-        Argument: time (int)
-        Action: function is a setter to set self.time = time (the argument passed in)
+        Argument: none
+        Action: function that is meant to export a list of ingredients to a PDF.
+                A grocery list.
+        Returns: The path to the new pdf
         &#34;&#34;&#34;
-        self.time = time
-        
-    def setServings(self, servings):
-        &#34;&#34;&#34;
-        Argument: servings (int)
-        Action: function is a setter to set self.servings = servings (the argument passed in)
-        &#34;&#34;&#34;
-        self.servings = servings
-        
-    def setURL(self, url):
-        &#34;&#34;&#34;
-        Argument: url (str)
-        Action: function is a setter to set self.url = url (the argument passed in)
-        &#34;&#34;&#34;
-        self.url = url
-        
-    def setImage(self, image):
-        &#34;&#34;&#34;
-        Argument: image (str)
-        Action: function is a setter to set self.image = image (the argument passed in)
-        &#34;&#34;&#34;
-    # contains the path to the image file
-        self.image = image
-        
-    def setSummary(self, summary):
-        &#34;&#34;&#34;
-        Argument: summary (str)
-        Action: function is a setter to set self.summary = summary (the argument passed in)
-        &#34;&#34;&#34;
-        self.summary = summary
-        
-    # needs to be passed a list
-    def setIngredients(self, ingredients):
-        &#34;&#34;&#34;
-        Argument: ingredients (str)
-        Action: function is a setter to set self.ingredients = ingredients (the argument passed in)
-        &#34;&#34;&#34;
-        self.ingredients = ingredients
-        
-    # needs to be passed a list
-    def setInstructions(self, instructions):
-        &#34;&#34;&#34;
-        Argument: instructions (str)
-        Action: function is a setter to set self.instructions = instructions (the argument passed in)
-        &#34;&#34;&#34;
-        self.instructions = instructions
-        
-    def addIngredient(ingr):
-        &#34;&#34;&#34;
-        Argument: ingr (id)
-        Action: function that adds ingredient
-        &#34;&#34;&#34;
-        self.ingredients.append(ingr)
-        
-    def removeIngredient(ingr):
-        &#34;&#34;&#34;
-        Argument: ingr (int)
-        Action: function that removes ingredient
-        &#34;&#34;&#34;
-        self.ingredients.remove(ingr)
-        
-    def addStep(pos, step):
-        &#34;&#34;&#34;
-        Arguments: pos (int), step (int)
-        Action: function that takes position number and step number of where the new instruction should be added
-        &#34;&#34;&#34;
-        self.instructions.insert(pos, step)
-        
-    def removeStep(pos):
-        &#34;&#34;&#34;
-        Argument: pos (int)
-        Action: function that removes a step in the instructions
-        &#34;&#34;&#34;
-        self.instructions.delete(pos)</code></pre>
+
+        pdf=fpdf.FPDF(format=&#39;letter&#39;)
+        pdf.add_page()
+        pdf.set_font(&#34;Arial&#34;,&#39;BU&#39;, size=30)
+        pdf.write(20,str(&#34;Grocery List For: &#34;+ self.title))
+        pdf.ln()
+
+        pdf.set_font(&#34;Arial&#34;, size=14)
+
+        for i in range(len(self.ingredients)):
+            
+            pdf.cell(w=4,h=5,border=1)
+            pdf.write(6,self.ingredients[i][&#39;name&#39;] + &#34;:\t&#34; +self.ingredients[i][&#39;amount&#39;] + &#34; &#34; +  self.ingredients[i][&#39;unit&#39;])
+
+            # pdf.write(6,str(self.ingredients[i]))
+            pdf.ln()
+
+        if not os.path.isdir(self.groceryListDir):
+            os.makedirs(self.groceryListDir)
+        outputFile = self.groceryListDir+&#34;\\&#34;+self.title+&#34; Grocery List.pdf&#34;
+        pdf.output(outputFile)
+        return outputFile</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="src.Recipe.Recipe.addIngredient"><code class="name flex">
-<span>def <span class="ident">addIngredient</span></span>(<span>ingr)</span>
+<dt id="src.Recipe.Recipe.printIngredientsPDF"><code class="name flex">
+<span>def <span class="ident">printIngredientsPDF</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Argument: ingr (id)
-Action: function that adds ingredient</p></div>
+<div class="desc"><p>Argument: none
+Action: function that is meant to export a list of ingredients to a PDF.
+A grocery list.
+Returns: The path to the new pdf</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def addIngredient(ingr):
+<pre><code class="python">def printIngredientsPDF(self):
     &#34;&#34;&#34;
-    Argument: ingr (id)
-    Action: function that adds ingredient
-    &#34;&#34;&#34;
-    self.ingredients.append(ingr)</code></pre>
-</details>
-</dd>
-<dt id="src.Recipe.Recipe.addStep"><code class="name flex">
-<span>def <span class="ident">addStep</span></span>(<span>pos, step)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Arguments: pos (int), step (int)
-Action: function that takes position number and step number of where the new instruction should be added</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def addStep(pos, step):
-    &#34;&#34;&#34;
-    Arguments: pos (int), step (int)
-    Action: function that takes position number and step number of where the new instruction should be added
-    &#34;&#34;&#34;
-    self.instructions.insert(pos, step)</code></pre>
-</details>
-</dd>
-<dt id="src.Recipe.Recipe.init0"><code class="name flex">
-<span>def <span class="ident">init0</span></span>(<span>self, title, id, time, servings, URL, image, summary, ingredients, instructions)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>This constructor is the post API integration, project 4 ready</p>
-<p>Arguments:
-title (str): string that says title of recipe
-id (int):
-int holding id number of recipe
-time(int): int holding the time it would take to cook
-servings (int): int that says servings made
-URL (str): string holding URL info
-image (str): holds string to path showing image of food
-summary (str): holds summary of food being made
-ingredients (str array): array holding the ingredients used in food
-instructions (str array): array holding the instructions to make the food</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def init0(self, title, id, time, servings, URL, image, summary, ingredients, instructions):
-
-    &#34;&#34;&#34;This constructor is the post API integration, project 4 ready
-
-    Arguments: 
-        title (str): string that says title of recipe
-        id (int):  int holding id number of recipe
-        time(int): int holding the time it would take to cook
-        servings (int): int that says servings made
-        URL (str): string holding URL info
-        image (str): holds string to path showing image of food
-        summary (str): holds summary of food being made
-        ingredients (str array): array holding the ingredients used in food 
-        instructions (str array): array holding the instructions to make the food
-    
-    &#34;&#34;&#34;
-# initializer for when we know all elements of the recipe (post API)
-
-    self.title = title
-    self.id = id
-    self.time = time
-    self.servings = servings
-    self.URL = URL
-    self.image = image
-    self.summary = summary
-    self.ingredients = ingredients
-    self.instructions = instructions</code></pre>
-</details>
-</dd>
-<dt id="src.Recipe.Recipe.init1"><code class="name flex">
-<span>def <span class="ident">init1</span></span>(<span>self, title, time, servings, summary, ingredients, instructions)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>This constructor takes in arguments from when object is made</p>
-<p>Arguments:
-title (str): string that says title of recipe
-time(int): int holding the time it would take to cook
-servings (int): int that says servings made
-summary (str): holds summary of food being made
-ingredients (str array): array holding the ingredients used in food
-instructions (str array): array holding the instructions to make the food</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def init1(self, title, time, servings, summary, ingredients, instructions):
-    &#34;&#34;&#34;This constructor takes in arguments from when object is made
-
-    Arguments: 
-        title (str): string that says title of recipe
-        time(int): int holding the time it would take to cook
-        servings (int): int that says servings made
-        summary (str): holds summary of food being made
-        ingredients (str array): array holding the ingredients used in food 
-        instructions (str array): array holding the instructions to make the food
-    
+    Argument: none
+    Action: function that is meant to export a list of ingredients to a PDF.
+            A grocery list.
+    Returns: The path to the new pdf
     &#34;&#34;&#34;
 
-# initializer for when we only know some elements of the recipe (pre API)
-    
-    self.title = title
-    self.time = time
-    self.servings = servings
-    self.summary = summary
-    self.ingredients = ingredients
-    self.instructions = instructions</code></pre>
-</details>
-</dd>
-<dt id="src.Recipe.Recipe.init2"><code class="name flex">
-<span>def <span class="ident">init2</span></span>(<span>self, yml)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>This constructor takes in a Yaml object, serialization</p>
-<p>Constructor sets self.variables:
-title (str): string that says title of recipe
-summary (str): holds summary of food being made
-servings (int): int that says servings made
-ingredients (str array): array holding the ingredients used in food
-instructions (str array): array holding the instructions to make the food</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def init2(self, yml):        
-    &#34;&#34;&#34;This constructor takes in a Yaml object, serialization
+    pdf=fpdf.FPDF(format=&#39;letter&#39;)
+    pdf.add_page()
+    pdf.set_font(&#34;Arial&#34;,&#39;BU&#39;, size=30)
+    pdf.write(20,str(&#34;Grocery List For: &#34;+ self.title))
+    pdf.ln()
 
-    Constructor sets self.variables: 
-        title (str): string that says title of recipe
-        summary (str): holds summary of food being made
-        servings (int): int that says servings made
-        ingredients (str array): array holding the ingredients used in food 
-        instructions (str array): array holding the instructions to make the food
-    
-    &#34;&#34;&#34;                                          
+    pdf.set_font(&#34;Arial&#34;, size=14)
 
-# Initializer that takes a yaml object
-# pass in the object that was read from the yaml file
+    for i in range(len(self.ingredients)):
+        
+        pdf.cell(w=4,h=5,border=1)
+        pdf.write(6,self.ingredients[i][&#39;name&#39;] + &#34;:\t&#34; +self.ingredients[i][&#39;amount&#39;] + &#34; &#34; +  self.ingredients[i][&#39;unit&#39;])
 
-    self.title = yml[&#34;title&#34;]
-    self.summary = yml[&#34;summary&#34;]
-    self.servings = yml[&#34;servings&#34;]
-    self.ingredients = yml[&#34;ingredients&#34;]                              # a dictionary with the indexes of &#34;name&#34;, &#34;amount&#34;, &amp; &#34;unit&#34;
-    self.instructions = yml[&#34;instructions&#34;]                            # a list of strings, each index is a separate step
-    i = 1</code></pre>
-</details>
-</dd>
-<dt id="src.Recipe.Recipe.removeIngredient"><code class="name flex">
-<span>def <span class="ident">removeIngredient</span></span>(<span>ingr)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Argument: ingr (int)
-Action: function that removes ingredient</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def removeIngredient(ingr):
-    &#34;&#34;&#34;
-    Argument: ingr (int)
-    Action: function that removes ingredient
-    &#34;&#34;&#34;
-    self.ingredients.remove(ingr)</code></pre>
-</details>
-</dd>
-<dt id="src.Recipe.Recipe.removeStep"><code class="name flex">
-<span>def <span class="ident">removeStep</span></span>(<span>pos)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Argument: pos (int)
-Action: function that removes a step in the instructions</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def removeStep(pos):
-    &#34;&#34;&#34;
-    Argument: pos (int)
-    Action: function that removes a step in the instructions
-    &#34;&#34;&#34;
-    self.instructions.delete(pos)</code></pre>
-</details>
-</dd>
-<dt id="src.Recipe.Recipe.setID"><code class="name flex">
-<span>def <span class="ident">setID</span></span>(<span>self, id)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Argument: id (int)
-Action: function is a setter to set self.id = id (the argument passed in)</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def setID(self, id):
-    &#34;&#34;&#34;
-    Argument: id (int)
-    Action: function is a setter to set self.id = id (the argument passed in)
-    &#34;&#34;&#34;
-    self.id = id</code></pre>
-</details>
-</dd>
-<dt id="src.Recipe.Recipe.setImage"><code class="name flex">
-<span>def <span class="ident">setImage</span></span>(<span>self, image)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Argument: image (str)
-Action: function is a setter to set self.image = image (the argument passed in)</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def setImage(self, image):
-    &#34;&#34;&#34;
-    Argument: image (str)
-    Action: function is a setter to set self.image = image (the argument passed in)
-    &#34;&#34;&#34;
-# contains the path to the image file
-    self.image = image</code></pre>
-</details>
-</dd>
-<dt id="src.Recipe.Recipe.setIngredients"><code class="name flex">
-<span>def <span class="ident">setIngredients</span></span>(<span>self, ingredients)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Argument: ingredients (str)
-Action: function is a setter to set self.ingredients = ingredients (the argument passed in)</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def setIngredients(self, ingredients):
-    &#34;&#34;&#34;
-    Argument: ingredients (str)
-    Action: function is a setter to set self.ingredients = ingredients (the argument passed in)
-    &#34;&#34;&#34;
-    self.ingredients = ingredients</code></pre>
-</details>
-</dd>
-<dt id="src.Recipe.Recipe.setInstructions"><code class="name flex">
-<span>def <span class="ident">setInstructions</span></span>(<span>self, instructions)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Argument: instructions (str)
-Action: function is a setter to set self.instructions = instructions (the argument passed in)</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def setInstructions(self, instructions):
-    &#34;&#34;&#34;
-    Argument: instructions (str)
-    Action: function is a setter to set self.instructions = instructions (the argument passed in)
-    &#34;&#34;&#34;
-    self.instructions = instructions</code></pre>
-</details>
-</dd>
-<dt id="src.Recipe.Recipe.setServings"><code class="name flex">
-<span>def <span class="ident">setServings</span></span>(<span>self, servings)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Argument: servings (int)
-Action: function is a setter to set self.servings = servings (the argument passed in)</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def setServings(self, servings):
-    &#34;&#34;&#34;
-    Argument: servings (int)
-    Action: function is a setter to set self.servings = servings (the argument passed in)
-    &#34;&#34;&#34;
-    self.servings = servings</code></pre>
-</details>
-</dd>
-<dt id="src.Recipe.Recipe.setSummary"><code class="name flex">
-<span>def <span class="ident">setSummary</span></span>(<span>self, summary)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Argument: summary (str)
-Action: function is a setter to set self.summary = summary (the argument passed in)</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def setSummary(self, summary):
-    &#34;&#34;&#34;
-    Argument: summary (str)
-    Action: function is a setter to set self.summary = summary (the argument passed in)
-    &#34;&#34;&#34;
-    self.summary = summary</code></pre>
-</details>
-</dd>
-<dt id="src.Recipe.Recipe.setTime"><code class="name flex">
-<span>def <span class="ident">setTime</span></span>(<span>self, time)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Argument: time (int)
-Action: function is a setter to set self.time = time (the argument passed in)</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def setTime(self, time):
-    &#34;&#34;&#34;
-    Argument: time (int)
-    Action: function is a setter to set self.time = time (the argument passed in)
-    &#34;&#34;&#34;
-    self.time = time</code></pre>
-</details>
-</dd>
-<dt id="src.Recipe.Recipe.setTitle"><code class="name flex">
-<span>def <span class="ident">setTitle</span></span>(<span>self, title)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Argument: title (str)
-Action: title setter</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def setTitle(self, title):
-    &#34;&#34;&#34;
-    Argument: title (str)
-    Action: title setter
-    &#34;&#34;&#34;
-    self.title = title
-    i = 1
-    while (1):
-        if not os.path.isdir(self.recipeDir + title):
-            os.rename(r&#34;&#34; + self.path, r&#34;&#34; + self.recipeDir + title)
-            self.path = self.recipeDir + title
-            break
-        elif not os.path.isdir(self.recipeDir + title + &#34;(&#34; + str(i) + &#34;)&#34;):
-            os.rename(r&#34;&#34; + self.path, r&#34;&#34; + self.recipeDir + title + &#34;(&#34; + str(i) + &#34;)&#34;)
-            self.path = self.recipeDir + title + &#34;(&#34; + str(i) + &#34;)&#34;
-            break
-        i = i+1</code></pre>
-</details>
-</dd>
-<dt id="src.Recipe.Recipe.setURL"><code class="name flex">
-<span>def <span class="ident">setURL</span></span>(<span>self, url)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Argument: url (str)
-Action: function is a setter to set self.url = url (the argument passed in)</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def setURL(self, url):
-    &#34;&#34;&#34;
-    Argument: url (str)
-    Action: function is a setter to set self.url = url (the argument passed in)
-    &#34;&#34;&#34;
-    self.url = url</code></pre>
+        # pdf.write(6,str(self.ingredients[i]))
+        pdf.ln()
+
+    if not os.path.isdir(self.groceryListDir):
+        os.makedirs(self.groceryListDir)
+    outputFile = self.groceryListDir+&#34;\\&#34;+self.title+&#34; Grocery List.pdf&#34;
+    pdf.output(outputFile)
+    return outputFile</code></pre>
 </details>
 </dd>
 </dl>
@@ -925,23 +308,8 @@ Action: function is a setter to set self.url = url (the argument passed in)</p><
 <ul>
 <li>
 <h4><code><a title="src.Recipe.Recipe" href="#src.Recipe.Recipe">Recipe</a></code></h4>
-<ul class="two-column">
-<li><code><a title="src.Recipe.Recipe.addIngredient" href="#src.Recipe.Recipe.addIngredient">addIngredient</a></code></li>
-<li><code><a title="src.Recipe.Recipe.addStep" href="#src.Recipe.Recipe.addStep">addStep</a></code></li>
-<li><code><a title="src.Recipe.Recipe.init0" href="#src.Recipe.Recipe.init0">init0</a></code></li>
-<li><code><a title="src.Recipe.Recipe.init1" href="#src.Recipe.Recipe.init1">init1</a></code></li>
-<li><code><a title="src.Recipe.Recipe.init2" href="#src.Recipe.Recipe.init2">init2</a></code></li>
-<li><code><a title="src.Recipe.Recipe.removeIngredient" href="#src.Recipe.Recipe.removeIngredient">removeIngredient</a></code></li>
-<li><code><a title="src.Recipe.Recipe.removeStep" href="#src.Recipe.Recipe.removeStep">removeStep</a></code></li>
-<li><code><a title="src.Recipe.Recipe.setID" href="#src.Recipe.Recipe.setID">setID</a></code></li>
-<li><code><a title="src.Recipe.Recipe.setImage" href="#src.Recipe.Recipe.setImage">setImage</a></code></li>
-<li><code><a title="src.Recipe.Recipe.setIngredients" href="#src.Recipe.Recipe.setIngredients">setIngredients</a></code></li>
-<li><code><a title="src.Recipe.Recipe.setInstructions" href="#src.Recipe.Recipe.setInstructions">setInstructions</a></code></li>
-<li><code><a title="src.Recipe.Recipe.setServings" href="#src.Recipe.Recipe.setServings">setServings</a></code></li>
-<li><code><a title="src.Recipe.Recipe.setSummary" href="#src.Recipe.Recipe.setSummary">setSummary</a></code></li>
-<li><code><a title="src.Recipe.Recipe.setTime" href="#src.Recipe.Recipe.setTime">setTime</a></code></li>
-<li><code><a title="src.Recipe.Recipe.setTitle" href="#src.Recipe.Recipe.setTitle">setTitle</a></code></li>
-<li><code><a title="src.Recipe.Recipe.setURL" href="#src.Recipe.Recipe.setURL">setURL</a></code></li>
+<ul class="">
+<li><code><a title="src.Recipe.Recipe.printIngredientsPDF" href="#src.Recipe.Recipe.printIngredientsPDF">printIngredientsPDF</a></code></li>
 </ul>
 </li>
 </ul>

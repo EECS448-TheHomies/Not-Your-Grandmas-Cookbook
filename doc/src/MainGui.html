@@ -27,7 +27,7 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">import PySimpleGUI as sg
-
+import os
 from .RecipeGui import RecipeGui
 
 from .CookBook import CookBook
@@ -51,11 +51,12 @@ class MainGUI(object):
         # This prints the debug prints to a window
         # sg.Print(do_not_reroute_stdout=False)
 
+        self.local = True
+        
         self.cookbook = CookBook()
+        
 
-
-        self.cookbook.loadFile(self.cookbook.recipeDir + &#34;t1.yml&#34;)
-        self.cookbook.loadFile(self.cookbook.recipeDir + &#34;t2.yml&#34;)
+        self.cookbook.loadAllRecipes()
 
 
 
@@ -83,10 +84,15 @@ class MainGUI(object):
 
         &#34;&#34;&#34;
         namesOfRecipes = []
-        
+        if not (self.local):
+            self.cookbook.find_recipes(filter)
+            self.cookbook.loadAllRecipes()
+
         for rec in self.cookbook.recipeArr:
-            if filter == &#39;&#39; or filter in rec.title:
-                namesOfRecipes.append(rec.title)   
+            filter = filter.casefold()
+            tmpTitle = rec.title.casefold()
+            if filter == &#39;&#39; or filter  in tmpTitle:
+                namesOfRecipes.append(rec.title) 
 
         return namesOfRecipes
 
@@ -100,21 +106,19 @@ class MainGUI(object):
 
         # Make the recipe list element
         self.elmRecipe = sg.Listbox(values=namesOfRecipes, size=(
-            60, 10), enable_events=True, key=&#39;-recSelect-&#39;)
+            72, 10), enable_events=True, key=&#39;-recSelect-&#39;)
 
         # Makes cols to justify buttons
-        self.colButtons = [[sg.Button(&#39;Open&#39;), sg.Button(&#39;Exit&#39;)]]
+        self.colOpen = [[sg.Radio(&#34;Dark Mode&#34;, &#34;r2&#34;,enable_events=True, key=&#39;-Dark-&#39;),sg.Radio(&#34;Light Mode&#34;, &#34;r2&#34;, default=True,enable_events=True, key=&#39;-Light-&#39;), sg.Button(&#39;Open&#39;), sg.Button(&#39;Exit&#39;)]]
 
-        # Defines the output filed
-        self.output = sg.Text(size=(12, 1))  # key=&#39;-OUTPUT-&#39;
 
         # This defines the layout of the main window
         layout = [[sg.Text(&#39;Your CookBook&#39;)],
-                  [sg.InputText(key=&#39;-recSearch-&#39;), sg.Button(&#39;Search&#39;),
-                   sg.Radio(&#34;local&#34;, &#34;r1&#34;, default=True)],
+                  [sg.InputText(key=&#39;-recSearch-&#39;), 
+                   sg.Radio(&#34;local&#34;, &#34;r1&#34;, default=True,enable_events=True,key=&#39;-local-&#39;),sg.Radio(&#34;Remote&#34;, &#34;r1&#34;,enable_events=True, key=&#39;-remote-&#39;),sg.Button(&#39;Search&#39;)],
                   [self.elmRecipe],
-                  [self.output],
-                  [sg.Column(self.colButtons, justification=&#39;right&#39;)]]
+                  [sg.Column(self.colOpen, justification=&#39;right&#39;)],
+                  [sg.Button(&#34;Test Functionality&#34;)]]
 
         # create the &#34;Window&#34;
         self.window = sg.Window(&#39;CookBook&#39;, layout, finalize=True)
@@ -130,29 +134,39 @@ class MainGUI(object):
             &#34;&#34;&#34;
             event, values = self.window()
             self.window.Refresh()
-            print(values)
+            # print(event)
+            # print(values)
 
             if event == sg.WIN_CLOSED or event == &#39;Exit&#39;:  # if user closes window or clicks cancel
                 break
+            elif event == &#39;Test Functionality&#39;:
+                os.system(&#34;pytest&#34;)
+            elif event == &#39;-local-&#39;:
+                self.local = True
+            elif event == &#39;-remote-&#39;:
+                self.local = False
             elif event == &#39;Search&#39;:
-                # window[&#39;-OUTPUT-&#39;].update(values[&#39;-resSearch-&#39;])
                 filtered_recipes = self.getRecipeNameList(
                     values[&#39;-recSearch-&#39;])
-                print(filtered_recipes)
+                # print(filtered_recipes)
                 self.elmRecipe(filtered_recipes)
-
+            elif event == &#39;-Dark-&#39;:
+                self.setGUITheme(&#34;DarkGrey2&#34;)
+            elif event == &#39;-Light-&#39;:
+                self.setGUITheme(&#34;LightGrey1&#34;)
             elif event == &#39;Open&#39;:
-                print(values[&#39;-recSelect-&#39;][0])
-                r = Recipe()
-                for rec in self.cookbook.recipeArr:
-                    print(rec.title)
-                    if values[&#39;-recSelect-&#39;][0] == rec.title:
-                        self.output(rec.title)
-                        newGUI = RecipeGui(self.theme, rec)
-                        newGUI.run()
-                
+                try:
+                    for rec in self.cookbook.recipeArr:
+                        # print(rec.title)
+                        # print(values[&#39;-recSelect-&#39;][0])
+                        if values[&#39;-recSelect-&#39;][0] == rec.title:
+                            newGUI = RecipeGui(self.theme, rec)
+                            newGUI.run()
+                except:
+                    pass                    
+                    # r = Recipe()
+                    
 
-                pass
 
         self.window.close()
 
@@ -204,11 +218,12 @@ winGUI.run()</code></pre>
         # This prints the debug prints to a window
         # sg.Print(do_not_reroute_stdout=False)
 
+        self.local = True
+        
         self.cookbook = CookBook()
+        
 
-
-        self.cookbook.loadFile(self.cookbook.recipeDir + &#34;t1.yml&#34;)
-        self.cookbook.loadFile(self.cookbook.recipeDir + &#34;t2.yml&#34;)
+        self.cookbook.loadAllRecipes()
 
 
 
@@ -236,10 +251,15 @@ winGUI.run()</code></pre>
 
         &#34;&#34;&#34;
         namesOfRecipes = []
-        
+        if not (self.local):
+            self.cookbook.find_recipes(filter)
+            self.cookbook.loadAllRecipes()
+
         for rec in self.cookbook.recipeArr:
-            if filter == &#39;&#39; or filter in rec.title:
-                namesOfRecipes.append(rec.title)   
+            filter = filter.casefold()
+            tmpTitle = rec.title.casefold()
+            if filter == &#39;&#39; or filter  in tmpTitle:
+                namesOfRecipes.append(rec.title) 
 
         return namesOfRecipes
 
@@ -253,21 +273,19 @@ winGUI.run()</code></pre>
 
         # Make the recipe list element
         self.elmRecipe = sg.Listbox(values=namesOfRecipes, size=(
-            60, 10), enable_events=True, key=&#39;-recSelect-&#39;)
+            72, 10), enable_events=True, key=&#39;-recSelect-&#39;)
 
         # Makes cols to justify buttons
-        self.colButtons = [[sg.Button(&#39;Open&#39;), sg.Button(&#39;Exit&#39;)]]
+        self.colOpen = [[sg.Radio(&#34;Dark Mode&#34;, &#34;r2&#34;,enable_events=True, key=&#39;-Dark-&#39;),sg.Radio(&#34;Light Mode&#34;, &#34;r2&#34;, default=True,enable_events=True, key=&#39;-Light-&#39;), sg.Button(&#39;Open&#39;), sg.Button(&#39;Exit&#39;)]]
 
-        # Defines the output filed
-        self.output = sg.Text(size=(12, 1))  # key=&#39;-OUTPUT-&#39;
 
         # This defines the layout of the main window
         layout = [[sg.Text(&#39;Your CookBook&#39;)],
-                  [sg.InputText(key=&#39;-recSearch-&#39;), sg.Button(&#39;Search&#39;),
-                   sg.Radio(&#34;local&#34;, &#34;r1&#34;, default=True)],
+                  [sg.InputText(key=&#39;-recSearch-&#39;), 
+                   sg.Radio(&#34;local&#34;, &#34;r1&#34;, default=True,enable_events=True,key=&#39;-local-&#39;),sg.Radio(&#34;Remote&#34;, &#34;r1&#34;,enable_events=True, key=&#39;-remote-&#39;),sg.Button(&#39;Search&#39;)],
                   [self.elmRecipe],
-                  [self.output],
-                  [sg.Column(self.colButtons, justification=&#39;right&#39;)]]
+                  [sg.Column(self.colOpen, justification=&#39;right&#39;)],
+                  [sg.Button(&#34;Test Functionality&#34;)]]
 
         # create the &#34;Window&#34;
         self.window = sg.Window(&#39;CookBook&#39;, layout, finalize=True)
@@ -283,29 +301,39 @@ winGUI.run()</code></pre>
             &#34;&#34;&#34;
             event, values = self.window()
             self.window.Refresh()
-            print(values)
+            # print(event)
+            # print(values)
 
             if event == sg.WIN_CLOSED or event == &#39;Exit&#39;:  # if user closes window or clicks cancel
                 break
+            elif event == &#39;Test Functionality&#39;:
+                os.system(&#34;pytest&#34;)
+            elif event == &#39;-local-&#39;:
+                self.local = True
+            elif event == &#39;-remote-&#39;:
+                self.local = False
             elif event == &#39;Search&#39;:
-                # window[&#39;-OUTPUT-&#39;].update(values[&#39;-resSearch-&#39;])
                 filtered_recipes = self.getRecipeNameList(
                     values[&#39;-recSearch-&#39;])
-                print(filtered_recipes)
+                # print(filtered_recipes)
                 self.elmRecipe(filtered_recipes)
-
+            elif event == &#39;-Dark-&#39;:
+                self.setGUITheme(&#34;DarkGrey2&#34;)
+            elif event == &#39;-Light-&#39;:
+                self.setGUITheme(&#34;LightGrey1&#34;)
             elif event == &#39;Open&#39;:
-                print(values[&#39;-recSelect-&#39;][0])
-                r = Recipe()
-                for rec in self.cookbook.recipeArr:
-                    print(rec.title)
-                    if values[&#39;-recSelect-&#39;][0] == rec.title:
-                        self.output(rec.title)
-                        newGUI = RecipeGui(self.theme, rec)
-                        newGUI.run()
-                
+                try:
+                    for rec in self.cookbook.recipeArr:
+                        # print(rec.title)
+                        # print(values[&#39;-recSelect-&#39;][0])
+                        if values[&#39;-recSelect-&#39;][0] == rec.title:
+                            newGUI = RecipeGui(self.theme, rec)
+                            newGUI.run()
+                except:
+                    pass                    
+                    # r = Recipe()
+                    
 
-                pass
 
         self.window.close()</code></pre>
 </details>
@@ -339,10 +367,15 @@ winGUI.run()</code></pre>
 
     &#34;&#34;&#34;
     namesOfRecipes = []
-    
+    if not (self.local):
+        self.cookbook.find_recipes(filter)
+        self.cookbook.loadAllRecipes()
+
     for rec in self.cookbook.recipeArr:
-        if filter == &#39;&#39; or filter in rec.title:
-            namesOfRecipes.append(rec.title)   
+        filter = filter.casefold()
+        tmpTitle = rec.title.casefold()
+        if filter == &#39;&#39; or filter  in tmpTitle:
+            namesOfRecipes.append(rec.title) 
 
     return namesOfRecipes</code></pre>
 </details>
@@ -366,21 +399,19 @@ winGUI.run()</code></pre>
 
     # Make the recipe list element
     self.elmRecipe = sg.Listbox(values=namesOfRecipes, size=(
-        60, 10), enable_events=True, key=&#39;-recSelect-&#39;)
+        72, 10), enable_events=True, key=&#39;-recSelect-&#39;)
 
     # Makes cols to justify buttons
-    self.colButtons = [[sg.Button(&#39;Open&#39;), sg.Button(&#39;Exit&#39;)]]
+    self.colOpen = [[sg.Radio(&#34;Dark Mode&#34;, &#34;r2&#34;,enable_events=True, key=&#39;-Dark-&#39;),sg.Radio(&#34;Light Mode&#34;, &#34;r2&#34;, default=True,enable_events=True, key=&#39;-Light-&#39;), sg.Button(&#39;Open&#39;), sg.Button(&#39;Exit&#39;)]]
 
-    # Defines the output filed
-    self.output = sg.Text(size=(12, 1))  # key=&#39;-OUTPUT-&#39;
 
     # This defines the layout of the main window
     layout = [[sg.Text(&#39;Your CookBook&#39;)],
-              [sg.InputText(key=&#39;-recSearch-&#39;), sg.Button(&#39;Search&#39;),
-               sg.Radio(&#34;local&#34;, &#34;r1&#34;, default=True)],
+              [sg.InputText(key=&#39;-recSearch-&#39;), 
+               sg.Radio(&#34;local&#34;, &#34;r1&#34;, default=True,enable_events=True,key=&#39;-local-&#39;),sg.Radio(&#34;Remote&#34;, &#34;r1&#34;,enable_events=True, key=&#39;-remote-&#39;),sg.Button(&#39;Search&#39;)],
               [self.elmRecipe],
-              [self.output],
-              [sg.Column(self.colButtons, justification=&#39;right&#39;)]]
+              [sg.Column(self.colOpen, justification=&#39;right&#39;)],
+              [sg.Button(&#34;Test Functionality&#34;)]]
 
     # create the &#34;Window&#34;
     self.window = sg.Window(&#39;CookBook&#39;, layout, finalize=True)
@@ -396,29 +427,39 @@ winGUI.run()</code></pre>
         &#34;&#34;&#34;
         event, values = self.window()
         self.window.Refresh()
-        print(values)
+        # print(event)
+        # print(values)
 
         if event == sg.WIN_CLOSED or event == &#39;Exit&#39;:  # if user closes window or clicks cancel
             break
+        elif event == &#39;Test Functionality&#39;:
+            os.system(&#34;pytest&#34;)
+        elif event == &#39;-local-&#39;:
+            self.local = True
+        elif event == &#39;-remote-&#39;:
+            self.local = False
         elif event == &#39;Search&#39;:
-            # window[&#39;-OUTPUT-&#39;].update(values[&#39;-resSearch-&#39;])
             filtered_recipes = self.getRecipeNameList(
                 values[&#39;-recSearch-&#39;])
-            print(filtered_recipes)
+            # print(filtered_recipes)
             self.elmRecipe(filtered_recipes)
-
+        elif event == &#39;-Dark-&#39;:
+            self.setGUITheme(&#34;DarkGrey2&#34;)
+        elif event == &#39;-Light-&#39;:
+            self.setGUITheme(&#34;LightGrey1&#34;)
         elif event == &#39;Open&#39;:
-            print(values[&#39;-recSelect-&#39;][0])
-            r = Recipe()
-            for rec in self.cookbook.recipeArr:
-                print(rec.title)
-                if values[&#39;-recSelect-&#39;][0] == rec.title:
-                    self.output(rec.title)
-                    newGUI = RecipeGui(self.theme, rec)
-                    newGUI.run()
-            
+            try:
+                for rec in self.cookbook.recipeArr:
+                    # print(rec.title)
+                    # print(values[&#39;-recSelect-&#39;][0])
+                    if values[&#39;-recSelect-&#39;][0] == rec.title:
+                        newGUI = RecipeGui(self.theme, rec)
+                        newGUI.run()
+            except:
+                pass                    
+                # r = Recipe()
+                
 
-            pass
 
     self.window.close()</code></pre>
 </details>

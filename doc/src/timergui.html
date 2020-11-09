@@ -26,9 +26,15 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">#author Edwin Recinos
+<pre><code class="python">#author Thomas Atkins and Edwin Recinos
 #originally set up to run the script that would pull up the timer
+from threading import Timer
+from time import time
 import PySimpleGUI as sg
+from datetime import date, datetime, timedelta
+from PySimpleGUI.PySimpleGUI import _FindElementWithFocusInSubForm
+
+from requests.models import MissingSchema 
 
 &#34;&#34;&#34;Timer Overview
 
@@ -45,124 +51,111 @@ Attributes:
             +15mins, -15mins, etc does what it says it does.
         Everything within the brackets is a row.
 
-    while loop, with if statements within to check what needs to be done.
-        if Start event is activated, timer runs 
-        if Pause event is activated, timer is paused
-        if Exit event is activated, timer window is closed down
-        if +15mins event, timer +15 mins
-        etc....
-        
-
 &#34;&#34;&#34;
 
-#sg.theme is an sg class method that sets theme to DarkBlue2
-sg.theme(&#39;DarkBlue2&#39;)
-sg.Print(do_not_reroute_stdout=False)
 
-#layout is how the window will look
-#each field of commands within a bracket is a row. 
+class TimerGui(object): 
 
-layout = [  
-            [  sg.Text(&#39;Food timer:&#39;, font=(&#39;Arial&#39;, 20)) ],                
-            [  sg.Text( font=(&#39;Arial&#39;, 45), size=(10,1), key=&#39;OUTPUT1&#39;, justification = &#39;center&#39;) ],
- #         [   sg.Text(&#39;Food being cooked: &#39;), sg.Output()],
- #           [  sg.Text(&#39;Type something in&#39;), sg.Input()  ], 
-            [  sg.Button(&#39;Start&#39;),  sg.Button(&#39;Pause&#39;), sg.Button(&#39;Exit&#39;)],
-            [ sg.Button(&#39;+15mins&#39;), sg.Button(&#39;-15mins&#39;),  sg.Button(&#39;+1min&#39;), sg.Button(&#39;-1min&#39;),  sg.Button(&#39;+30secs&#39;), sg.Button(&#39;-30secs&#39;)] 
-               ]                           
-
-
-window = sg.Window(&#34;FOOD TIME!&#34;, layout)
-
-#@count is the number that the counter should display
-#@timr is a variable that indicates if the timer is running
-count=0
-timr= True
-
-#while event loop is going, no break activated, the &#39;count&#39; variable will keep rising unless paused
-#and another button is pressed. Those are the if statements.
-#If statements are checked once the timer is paused to see if user wants to add or subtract time.
-
-
-while True:
-
-    &#34;&#34;&#34;While loop run will check for events
-    Summary:
-        Premade Variables:
-            count(int): will keep track of the timer count
-            timr(bool): bool check to see if timr has been stopped by user
-
-        Actions:
-            While Loop: runs until break is detected which is if window is closed or the event hits Exit
-                if statements are meant to keep track of the premade variables and where the event is currently on
-                    event in Exit or user closes window then break
-                    event in Start then the timer starts, timr set to true
-                    event in Pause then the timer pauses, timr set to false
-                    event in +15mins has nested if statement checking if timr is set to false
-                        as a check to see if timer is paused. If so then adds 15 mins to counter.
-                    event in -15mins has nested if statement checking if timr is set to false
-                        as a check to see if timer is paused. If so then subtracts 15 mins from counter
-                    events same for +1/-1mins and +30/-30secs. Buttons doing what the events are labeled as
-
-                everytime the while loop loops, you have an if timr == true which if it is the case, the timer is
-                    running. Which everytime it loops and timr is True, it will add 1 to the counter.
-                
-            Once broken out of the while loop, the window will close, hence the window.close()
-    &#34;&#34;&#34;
-
-    event, values = window.read(timeout=10)
-    if event in (sg.WIN_CLOSED, &#39;Exit&#39;):
-        break
-    
-    elif event in (&#39;Start&#39;):
-        timr = True
-
-    
-    elif event in (&#39;Pause&#39;):
-        timr= False
-
-
-    elif event in (&#39;+15mins&#39;):
-        if timr==False:
-            count=count+1500
-            window[&#39;OUTPUT1&#39;].update(&#39;{:02d}:{:02d}.{:02d}&#39;.format((count // 100) // 60, (count // 100) % 60, count % 100))
+    def __init__(self, theme: str):
+            &#34;&#34;&#34;Sets up the options for the GUI
             
-    
-    elif event in (&#39;-15mins&#39;):
-        if timr == False:
-            count=count-1500
-            window[&#39;OUTPUT1&#39;].update(&#39;{:02d}:{:02d}.{:02d}&#39;.format((count // 100) // 60, (count // 100) % 60, count % 100))
-            
-    elif event in (&#39;+1min&#39;):
-        if timr==False:
-            count=count+100
-            window[&#39;OUTPUT1&#39;].update(&#39;{:02d}:{:02d}.{:02d}&#39;.format((count // 100) // 60, (count // 100) % 60, count % 100))
-            
-    
-    elif event in (&#39;-1min&#39;):
-        if timr == False:
-            count=count-100
-            window[&#39;OUTPUT1&#39;].update(&#39;{:02d}:{:02d}.{:02d}&#39;.format((count // 100) // 60, (count // 100) % 60, count % 100))
+            &#34;&#34;&#34;
 
-    elif event in (&#39;+30secs&#39;):
-        if timr==False:
-            count=count+30
-            window[&#39;OUTPUT1&#39;].update(&#39;{:02d}:{:02d}.{:02d}&#39;.format((count // 100) // 60, (count // 100) % 60, count % 100))
+            self.width = 50
+            self.theme = theme
+
+            self.finish_time = datetime.now() + timedelta(minutes=5)
+            self.value = self.finish_time - datetime.now()
+            self.active = False
             
+
+            # Theme
+            sg.theme(theme)
+
+
+
+    def make_timer_gui(self) :
+        &#34;&#34;&#34;This function makes the GUI for the timer
+
+        Returns:
+            sg.Window: The timer window object
+        &#34;&#34;&#34;
+        layout = [
+            [sg.Input(&#39;Timer Label&#39;,font=(&#39;Arial&#39;,20),size=(25,1))],
+            [sg.Text(font=(&#39;Arial&#39;, 45), size=(10, 1),
+                     key=&#39;--time--&#39;, justification=&#39;center&#39;)],
+            [sg.Button(&#34;+5 min&#34;), sg.Button(&#34;+1 min&#34;), sg.Button(&#34;+30 sec&#34;), sg.VerticalSeparator() ,sg.Button(&#34;-5 min&#34;), sg.Button(&#34;-1 min&#34;), sg.Button(&#34;-30 sec&#34;)],
+            [sg.Button(&#39;Start&#39;),  sg.Button(&#39;Pause&#39;)]
+        ]
+       
+        self.gui = sg.Window(&#39;FOOD TIME!&#39;, layout, finalize=True)
+
+    def format_time(self, seconds:int)-&gt;str:
+        &#34;&#34;&#34; This is a helper function to format the timer
         
-    elif event in (&#39;-30secs&#39;):
-        if timr == False:
-            count=count-30
-            window[&#39;OUTPUT1&#39;].update(&#39;{:02d}:{:02d}.{:02d}&#39;.format((count // 100) // 60, (count // 100) % 60, count % 100))
-        
+        Args: 
+            seconds (int): the time left on the timer
 
-    if timr == True:
-        window[&#39;OUTPUT1&#39;].update(&#39;{:02d}:{:02d}.{:02d}&#39;.format((count // 100) // 60, (count // 100) % 60, count % 100))
-        count = count+1
-        print(count)
+        Returns:
+            str: the formatted string to display on the timer
+        &#34;&#34;&#34;
+        t_m, t_s = divmod(seconds, 60)
+        t_h, t_m = divmod(t_m, 60)
+        time_formated = f&#34;{t_h:02}:{t_m:02}:{t_s:02}&#34;
+        return time_formated
 
+    def delta_from_event(self, tw_event:str) -&gt; timedelta:
+        &#34;&#34;&#34; converts the event string into the timedelta
 
-window.close()</code></pre>
+        Args: 
+            tw_event: The event string that contains what time the user has requested
+
+        Returns:
+            timedelta: the time delta that has been requedted to update the timer with
+        &#34;&#34;&#34;
+        if tw_event == &#39;+5 min&#39;:
+            return timedelta(minutes=5)
+        elif tw_event == &#39;+1 min&#39;:
+            return timedelta(minutes=1)
+        elif tw_event == &#39;+30 sec&#39;:
+            return timedelta(seconds=30)
+        elif tw_event == &#39;-5 min&#39;:
+            return timedelta(minutes=-5)
+        elif tw_event == &#39;-1 min&#39;:
+            return timedelta(minutes=-1)
+        elif tw_event == &#39;-30 sec&#39;:
+            return timedelta(seconds=-30)
+        else:
+            return timedelta(0)
+
+    def event_handle(self, tw_event:str):
+        # print(tw_event)
+        if tw_event == &#39;Start&#39;:
+            self.active = True
+            self.finish_time = datetime.now() + self.value 
+        elif tw_event == &#39;Pause&#39;:
+            self.active = False
+        # print(self.active)
+
+        delta = self.delta_from_event(tw_event)
+            
+        if self.active:         
+            if self.finish_time - datetime.now() &lt; delta:
+                self.finish_time = datetime.now()
+                self.value = timedelta(0)
+            else:
+                self.finish_time += delta
+                self.value = self.finish_time - datetime.now()
+        else:
+            if delta &gt; self.value:
+                self.value = timedelta(0)
+            self.value += self.delta_from_event(tw_event)
+
+        if self.value == timedelta(0):
+            self.active=False
+
+        time_formated = self.format_time(self.value.seconds)
+        self.gui[&#39;--time--&#39;](time_formated)</code></pre>
 </details>
 </section>
 <section>
@@ -172,6 +165,268 @@ window.close()</code></pre>
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="src.timergui.TimerGui"><code class="flex name class">
+<span>class <span class="ident">TimerGui</span></span>
+<span>(</span><span>theme: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sets up the options for the GUI</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TimerGui(object): 
+
+    def __init__(self, theme: str):
+            &#34;&#34;&#34;Sets up the options for the GUI
+            
+            &#34;&#34;&#34;
+
+            self.width = 50
+            self.theme = theme
+
+            self.finish_time = datetime.now() + timedelta(minutes=5)
+            self.value = self.finish_time - datetime.now()
+            self.active = False
+            
+
+            # Theme
+            sg.theme(theme)
+
+
+
+    def make_timer_gui(self) :
+        &#34;&#34;&#34;This function makes the GUI for the timer
+
+        Returns:
+            sg.Window: The timer window object
+        &#34;&#34;&#34;
+        layout = [
+            [sg.Input(&#39;Timer Label&#39;,font=(&#39;Arial&#39;,20),size=(25,1))],
+            [sg.Text(font=(&#39;Arial&#39;, 45), size=(10, 1),
+                     key=&#39;--time--&#39;, justification=&#39;center&#39;)],
+            [sg.Button(&#34;+5 min&#34;), sg.Button(&#34;+1 min&#34;), sg.Button(&#34;+30 sec&#34;), sg.VerticalSeparator() ,sg.Button(&#34;-5 min&#34;), sg.Button(&#34;-1 min&#34;), sg.Button(&#34;-30 sec&#34;)],
+            [sg.Button(&#39;Start&#39;),  sg.Button(&#39;Pause&#39;)]
+        ]
+       
+        self.gui = sg.Window(&#39;FOOD TIME!&#39;, layout, finalize=True)
+
+    def format_time(self, seconds:int)-&gt;str:
+        &#34;&#34;&#34; This is a helper function to format the timer
+        
+        Args: 
+            seconds (int): the time left on the timer
+
+        Returns:
+            str: the formatted string to display on the timer
+        &#34;&#34;&#34;
+        t_m, t_s = divmod(seconds, 60)
+        t_h, t_m = divmod(t_m, 60)
+        time_formated = f&#34;{t_h:02}:{t_m:02}:{t_s:02}&#34;
+        return time_formated
+
+    def delta_from_event(self, tw_event:str) -&gt; timedelta:
+        &#34;&#34;&#34; converts the event string into the timedelta
+
+        Args: 
+            tw_event: The event string that contains what time the user has requested
+
+        Returns:
+            timedelta: the time delta that has been requedted to update the timer with
+        &#34;&#34;&#34;
+        if tw_event == &#39;+5 min&#39;:
+            return timedelta(minutes=5)
+        elif tw_event == &#39;+1 min&#39;:
+            return timedelta(minutes=1)
+        elif tw_event == &#39;+30 sec&#39;:
+            return timedelta(seconds=30)
+        elif tw_event == &#39;-5 min&#39;:
+            return timedelta(minutes=-5)
+        elif tw_event == &#39;-1 min&#39;:
+            return timedelta(minutes=-1)
+        elif tw_event == &#39;-30 sec&#39;:
+            return timedelta(seconds=-30)
+        else:
+            return timedelta(0)
+
+    def event_handle(self, tw_event:str):
+        # print(tw_event)
+        if tw_event == &#39;Start&#39;:
+            self.active = True
+            self.finish_time = datetime.now() + self.value 
+        elif tw_event == &#39;Pause&#39;:
+            self.active = False
+        # print(self.active)
+
+        delta = self.delta_from_event(tw_event)
+            
+        if self.active:         
+            if self.finish_time - datetime.now() &lt; delta:
+                self.finish_time = datetime.now()
+                self.value = timedelta(0)
+            else:
+                self.finish_time += delta
+                self.value = self.finish_time - datetime.now()
+        else:
+            if delta &gt; self.value:
+                self.value = timedelta(0)
+            self.value += self.delta_from_event(tw_event)
+
+        if self.value == timedelta(0):
+            self.active=False
+
+        time_formated = self.format_time(self.value.seconds)
+        self.gui[&#39;--time--&#39;](time_formated)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="src.timergui.TimerGui.delta_from_event"><code class="name flex">
+<span>def <span class="ident">delta_from_event</span></span>(<span>self, tw_event: str) ‑> datetime.timedelta</span>
+</code></dt>
+<dd>
+<div class="desc"><p>converts the event string into the timedelta</p>
+<p>Args:
+tw_event: The event string that contains what time the user has requested</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>timedelta</code></dt>
+<dd>the time delta that has been requedted to update the timer with</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def delta_from_event(self, tw_event:str) -&gt; timedelta:
+    &#34;&#34;&#34; converts the event string into the timedelta
+
+    Args: 
+        tw_event: The event string that contains what time the user has requested
+
+    Returns:
+        timedelta: the time delta that has been requedted to update the timer with
+    &#34;&#34;&#34;
+    if tw_event == &#39;+5 min&#39;:
+        return timedelta(minutes=5)
+    elif tw_event == &#39;+1 min&#39;:
+        return timedelta(minutes=1)
+    elif tw_event == &#39;+30 sec&#39;:
+        return timedelta(seconds=30)
+    elif tw_event == &#39;-5 min&#39;:
+        return timedelta(minutes=-5)
+    elif tw_event == &#39;-1 min&#39;:
+        return timedelta(minutes=-1)
+    elif tw_event == &#39;-30 sec&#39;:
+        return timedelta(seconds=-30)
+    else:
+        return timedelta(0)</code></pre>
+</details>
+</dd>
+<dt id="src.timergui.TimerGui.event_handle"><code class="name flex">
+<span>def <span class="ident">event_handle</span></span>(<span>self, tw_event: str)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def event_handle(self, tw_event:str):
+    # print(tw_event)
+    if tw_event == &#39;Start&#39;:
+        self.active = True
+        self.finish_time = datetime.now() + self.value 
+    elif tw_event == &#39;Pause&#39;:
+        self.active = False
+    # print(self.active)
+
+    delta = self.delta_from_event(tw_event)
+        
+    if self.active:         
+        if self.finish_time - datetime.now() &lt; delta:
+            self.finish_time = datetime.now()
+            self.value = timedelta(0)
+        else:
+            self.finish_time += delta
+            self.value = self.finish_time - datetime.now()
+    else:
+        if delta &gt; self.value:
+            self.value = timedelta(0)
+        self.value += self.delta_from_event(tw_event)
+
+    if self.value == timedelta(0):
+        self.active=False
+
+    time_formated = self.format_time(self.value.seconds)
+    self.gui[&#39;--time--&#39;](time_formated)</code></pre>
+</details>
+</dd>
+<dt id="src.timergui.TimerGui.format_time"><code class="name flex">
+<span>def <span class="ident">format_time</span></span>(<span>self, seconds: int) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This is a helper function to format the timer</p>
+<p>Args:
+seconds (int): the time left on the timer</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>the formatted string to display on the timer</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def format_time(self, seconds:int)-&gt;str:
+    &#34;&#34;&#34; This is a helper function to format the timer
+    
+    Args: 
+        seconds (int): the time left on the timer
+
+    Returns:
+        str: the formatted string to display on the timer
+    &#34;&#34;&#34;
+    t_m, t_s = divmod(seconds, 60)
+    t_h, t_m = divmod(t_m, 60)
+    time_formated = f&#34;{t_h:02}:{t_m:02}:{t_s:02}&#34;
+    return time_formated</code></pre>
+</details>
+</dd>
+<dt id="src.timergui.TimerGui.make_timer_gui"><code class="name flex">
+<span>def <span class="ident">make_timer_gui</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This function makes the GUI for the timer</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>sg.Window</code></dt>
+<dd>The timer window object</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_timer_gui(self) :
+    &#34;&#34;&#34;This function makes the GUI for the timer
+
+    Returns:
+        sg.Window: The timer window object
+    &#34;&#34;&#34;
+    layout = [
+        [sg.Input(&#39;Timer Label&#39;,font=(&#39;Arial&#39;,20),size=(25,1))],
+        [sg.Text(font=(&#39;Arial&#39;, 45), size=(10, 1),
+                 key=&#39;--time--&#39;, justification=&#39;center&#39;)],
+        [sg.Button(&#34;+5 min&#34;), sg.Button(&#34;+1 min&#34;), sg.Button(&#34;+30 sec&#34;), sg.VerticalSeparator() ,sg.Button(&#34;-5 min&#34;), sg.Button(&#34;-1 min&#34;), sg.Button(&#34;-30 sec&#34;)],
+        [sg.Button(&#39;Start&#39;),  sg.Button(&#39;Pause&#39;)]
+    ]
+   
+    self.gui = sg.Window(&#39;FOOD TIME!&#39;, layout, finalize=True)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -183,6 +438,19 @@ window.close()</code></pre>
 <li><h3>Super-module</h3>
 <ul>
 <li><code><a title="src" href="index.html">src</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="src.timergui.TimerGui" href="#src.timergui.TimerGui">TimerGui</a></code></h4>
+<ul class="">
+<li><code><a title="src.timergui.TimerGui.delta_from_event" href="#src.timergui.TimerGui.delta_from_event">delta_from_event</a></code></li>
+<li><code><a title="src.timergui.TimerGui.event_handle" href="#src.timergui.TimerGui.event_handle">event_handle</a></code></li>
+<li><code><a title="src.timergui.TimerGui.format_time" href="#src.timergui.TimerGui.format_time">format_time</a></code></li>
+<li><code><a title="src.timergui.TimerGui.make_timer_gui" href="#src.timergui.TimerGui.make_timer_gui">make_timer_gui</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

@@ -29,8 +29,10 @@
 <pre><code class="python">#CookBookClass
 #handles interfacing
 #contains recipe objects
-import yaml
+
 import os
+import spoonacular as sp
+import yaml
 from .Recipe import Recipe
 class CookBook:
 
@@ -38,42 +40,60 @@ class CookBook:
 #Has Recipes
 #Loads recipes from files
     def __init__(self):
+        self.api = sp.API(&#39;79cd1cbf518f4039988fd991e9977bd8&#39;)
         self.recipeArr = []
-        self.parentDir = (os.getcwd()) + &#34;\\&#34;          # e.g. C:\\Users\Username\ProgramFiles\Project3Folder\
-        self.recipeDir = self.parentDir  +&#34;Recipes\\&#34;                 # e.g. C:\\Users\Username\ProgramFiles\Project3Folder\Recipes\
-
+        self.recipeDir = os.path.expanduser(&#39;~&#39;) + &#39;\\Documents\\Recipes&#39;          # e.g. C:\\Users\Username\Documents\Recipes
+        if not os.path.isdir(self.recipeDir):
+            os.makedirs(self.recipeDir)
 
     def loadFile(self,fileLoc):
-    
-    # loadFile takes the location to a .yaml file in the form of a string
+        &#34;&#34;&#34;
+        Loads all locally stored recipes at once
+        &#34;&#34;&#34;
     
         with open(fileLoc) as file:
             yml = yaml.full_load(file)
-        recipeName = Recipe()
-        recipeName.init2(yml)
-        # i = 1
-        # while (1):                                                          # Here we are checking if there is a directory in existance, if not make one
-        #     if not os.path.isdir(self.recipeDir + yml[&#34;title&#34;]):
-        #         os.makedirs(self.recipeDir + yml[&#34;title&#34;])
-        #         recipeName.path = self.recipeDir + yml[&#34;title&#34;]
-        #         break
-        #     elif not os.path.isdir(self.recipeDir + yml[&#34;title&#34;] + &#34;(&#34; + str(i) + &#34;)&#34;):
-        #         os.makedirs(self.recipeDir + yml[&#34;title&#34;] + &#34;(&#34; + str(i) + &#34;)&#34;)
-        #         recipeName.path = self.recipeDir + yml[&#34;title&#34;] + &#34;(&#34; + str(i) + &#34;)&#34;
-        #         break
-        #     i = i+1
-        # os.rename(fileLoc, self.recipeDir + &#34;\\&#34; + os.path.basename(recipeName.path) + &#34;\\&#34; + os.path.basename(fileLoc))
-        
-        # once the recipe has been created, we know there will be a directory for that recipe in \Recipes
-        # so we can move the .yaml file into that directory
-        
-        
+            recipeName = Recipe(yml)
+            file.close()
 
         self.recipeArr.append(recipeName)
-
-
-    def printRecipes(self, recipeName):
-        recipeName.printRecipe()</code></pre>
+        
+    def loadAllRecipes(self):
+        for filename in os.listdir(self.recipeDir):
+            try:
+                with open(self.recipeDir + &#39;\\&#39; + filename) as file:
+                    yml = yaml.full_load(file)
+                    self.recipeArr.append(Recipe(yml))
+                    file.close()
+            except:
+                os.remove(self.recipeDir + &#39;\\&#39; + filename)
+            
+        
+    def find_recipes(self, query):
+        &#34;&#34;&#34;
+        Searches for a given query and saves results to an array with 10 entries, each entry contains a recipe related 
+        to the query with an ID, a title, a link to an image, and the image type located at index 0, 1, 2, and 3, respectively
+        Then it loops through the array and makes a call to the API for each index&#39;s ID.
+        
+        Arguments: 
+            query (str): Query passed to the API to be searched for
+        &#34;&#34;&#34;
+        response = self.api.search_recipes_complex(query)
+        results = response.json()[&#39;results&#39;]
+        for i in range(len(results)):
+            id = str(results[i][&#39;id&#39;])
+            path = &#39;recipes/&#39; + id + &#39;/information&#39;
+            response = self.api._make_request(path)
+            res = response.json()
+            title = res[&#39;title&#39;].replace(&#39;/&#39;,&#39;&#39;)
+            if not os.path.isdir(self.recipeDir + &#39;\\&#39; + title + &#39;.yml&#39;):
+                with open(self.recipeDir + &#39;\\&#39; + title + &#39;.yml&#39;, &#39;w&#39;) as file:
+                    doc = yaml.dump(res, file) 
+                    file.close()
+                    break
+            else:
+                break
+               </code></pre>
 </details>
 </section>
 <section>
@@ -100,94 +120,141 @@ class CookBook:
 #Has Recipes
 #Loads recipes from files
     def __init__(self):
+        self.api = sp.API(&#39;79cd1cbf518f4039988fd991e9977bd8&#39;)
         self.recipeArr = []
-        self.parentDir = (os.getcwd()) + &#34;\\&#34;          # e.g. C:\\Users\Username\ProgramFiles\Project3Folder\
-        self.recipeDir = self.parentDir  +&#34;Recipes\\&#34;                 # e.g. C:\\Users\Username\ProgramFiles\Project3Folder\Recipes\
-
+        self.recipeDir = os.path.expanduser(&#39;~&#39;) + &#39;\\Documents\\Recipes&#39;          # e.g. C:\\Users\Username\Documents\Recipes
+        if not os.path.isdir(self.recipeDir):
+            os.makedirs(self.recipeDir)
 
     def loadFile(self,fileLoc):
-    
-    # loadFile takes the location to a .yaml file in the form of a string
+        &#34;&#34;&#34;
+        Loads all locally stored recipes at once
+        &#34;&#34;&#34;
     
         with open(fileLoc) as file:
             yml = yaml.full_load(file)
-        recipeName = Recipe()
-        recipeName.init2(yml)
-        # i = 1
-        # while (1):                                                          # Here we are checking if there is a directory in existance, if not make one
-        #     if not os.path.isdir(self.recipeDir + yml[&#34;title&#34;]):
-        #         os.makedirs(self.recipeDir + yml[&#34;title&#34;])
-        #         recipeName.path = self.recipeDir + yml[&#34;title&#34;]
-        #         break
-        #     elif not os.path.isdir(self.recipeDir + yml[&#34;title&#34;] + &#34;(&#34; + str(i) + &#34;)&#34;):
-        #         os.makedirs(self.recipeDir + yml[&#34;title&#34;] + &#34;(&#34; + str(i) + &#34;)&#34;)
-        #         recipeName.path = self.recipeDir + yml[&#34;title&#34;] + &#34;(&#34; + str(i) + &#34;)&#34;
-        #         break
-        #     i = i+1
-        # os.rename(fileLoc, self.recipeDir + &#34;\\&#34; + os.path.basename(recipeName.path) + &#34;\\&#34; + os.path.basename(fileLoc))
-        
-        # once the recipe has been created, we know there will be a directory for that recipe in \Recipes
-        # so we can move the .yaml file into that directory
-        
-        
+            recipeName = Recipe(yml)
+            file.close()
 
         self.recipeArr.append(recipeName)
-
-
-    def printRecipes(self, recipeName):
-        recipeName.printRecipe()</code></pre>
+        
+    def loadAllRecipes(self):
+        for filename in os.listdir(self.recipeDir):
+            try:
+                with open(self.recipeDir + &#39;\\&#39; + filename) as file:
+                    yml = yaml.full_load(file)
+                    self.recipeArr.append(Recipe(yml))
+                    file.close()
+            except:
+                os.remove(self.recipeDir + &#39;\\&#39; + filename)
+            
+        
+    def find_recipes(self, query):
+        &#34;&#34;&#34;
+        Searches for a given query and saves results to an array with 10 entries, each entry contains a recipe related 
+        to the query with an ID, a title, a link to an image, and the image type located at index 0, 1, 2, and 3, respectively
+        Then it loops through the array and makes a call to the API for each index&#39;s ID.
+        
+        Arguments: 
+            query (str): Query passed to the API to be searched for
+        &#34;&#34;&#34;
+        response = self.api.search_recipes_complex(query)
+        results = response.json()[&#39;results&#39;]
+        for i in range(len(results)):
+            id = str(results[i][&#39;id&#39;])
+            path = &#39;recipes/&#39; + id + &#39;/information&#39;
+            response = self.api._make_request(path)
+            res = response.json()
+            title = res[&#39;title&#39;].replace(&#39;/&#39;,&#39;&#39;)
+            if not os.path.isdir(self.recipeDir + &#39;\\&#39; + title + &#39;.yml&#39;):
+                with open(self.recipeDir + &#39;\\&#39; + title + &#39;.yml&#39;, &#39;w&#39;) as file:
+                    doc = yaml.dump(res, file) 
+                    file.close()
+                    break
+            else:
+                break</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
+<dt id="src.CookBook.CookBook.find_recipes"><code class="name flex">
+<span>def <span class="ident">find_recipes</span></span>(<span>self, query)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Searches for a given query and saves results to an array with 10 entries, each entry contains a recipe related
+to the query with an ID, a title, a link to an image, and the image type located at index 0, 1, 2, and 3, respectively
+Then it loops through the array and makes a call to the API for each index's ID.</p>
+<p>Arguments:
+query (str): Query passed to the API to be searched for</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_recipes(self, query):
+    &#34;&#34;&#34;
+    Searches for a given query and saves results to an array with 10 entries, each entry contains a recipe related 
+    to the query with an ID, a title, a link to an image, and the image type located at index 0, 1, 2, and 3, respectively
+    Then it loops through the array and makes a call to the API for each index&#39;s ID.
+    
+    Arguments: 
+        query (str): Query passed to the API to be searched for
+    &#34;&#34;&#34;
+    response = self.api.search_recipes_complex(query)
+    results = response.json()[&#39;results&#39;]
+    for i in range(len(results)):
+        id = str(results[i][&#39;id&#39;])
+        path = &#39;recipes/&#39; + id + &#39;/information&#39;
+        response = self.api._make_request(path)
+        res = response.json()
+        title = res[&#39;title&#39;].replace(&#39;/&#39;,&#39;&#39;)
+        if not os.path.isdir(self.recipeDir + &#39;\\&#39; + title + &#39;.yml&#39;):
+            with open(self.recipeDir + &#39;\\&#39; + title + &#39;.yml&#39;, &#39;w&#39;) as file:
+                doc = yaml.dump(res, file) 
+                file.close()
+                break
+        else:
+            break</code></pre>
+</details>
+</dd>
+<dt id="src.CookBook.CookBook.loadAllRecipes"><code class="name flex">
+<span>def <span class="ident">loadAllRecipes</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def loadAllRecipes(self):
+    for filename in os.listdir(self.recipeDir):
+        try:
+            with open(self.recipeDir + &#39;\\&#39; + filename) as file:
+                yml = yaml.full_load(file)
+                self.recipeArr.append(Recipe(yml))
+                file.close()
+        except:
+            os.remove(self.recipeDir + &#39;\\&#39; + filename)</code></pre>
+</details>
+</dd>
 <dt id="src.CookBook.CookBook.loadFile"><code class="name flex">
 <span>def <span class="ident">loadFile</span></span>(<span>self, fileLoc)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Loads all locally stored recipes at once</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def loadFile(self,fileLoc):
-
-# loadFile takes the location to a .yaml file in the form of a string
+    &#34;&#34;&#34;
+    Loads all locally stored recipes at once
+    &#34;&#34;&#34;
 
     with open(fileLoc) as file:
         yml = yaml.full_load(file)
-    recipeName = Recipe()
-    recipeName.init2(yml)
-    # i = 1
-    # while (1):                                                          # Here we are checking if there is a directory in existance, if not make one
-    #     if not os.path.isdir(self.recipeDir + yml[&#34;title&#34;]):
-    #         os.makedirs(self.recipeDir + yml[&#34;title&#34;])
-    #         recipeName.path = self.recipeDir + yml[&#34;title&#34;]
-    #         break
-    #     elif not os.path.isdir(self.recipeDir + yml[&#34;title&#34;] + &#34;(&#34; + str(i) + &#34;)&#34;):
-    #         os.makedirs(self.recipeDir + yml[&#34;title&#34;] + &#34;(&#34; + str(i) + &#34;)&#34;)
-    #         recipeName.path = self.recipeDir + yml[&#34;title&#34;] + &#34;(&#34; + str(i) + &#34;)&#34;
-    #         break
-    #     i = i+1
-    # os.rename(fileLoc, self.recipeDir + &#34;\\&#34; + os.path.basename(recipeName.path) + &#34;\\&#34; + os.path.basename(fileLoc))
-    
-    # once the recipe has been created, we know there will be a directory for that recipe in \Recipes
-    # so we can move the .yaml file into that directory
-    
-    
+        recipeName = Recipe(yml)
+        file.close()
 
     self.recipeArr.append(recipeName)</code></pre>
-</details>
-</dd>
-<dt id="src.CookBook.CookBook.printRecipes"><code class="name flex">
-<span>def <span class="ident">printRecipes</span></span>(<span>self, recipeName)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def printRecipes(self, recipeName):
-    recipeName.printRecipe()</code></pre>
 </details>
 </dd>
 </dl>
@@ -211,8 +278,9 @@ class CookBook:
 <li>
 <h4><code><a title="src.CookBook.CookBook" href="#src.CookBook.CookBook">CookBook</a></code></h4>
 <ul class="">
+<li><code><a title="src.CookBook.CookBook.find_recipes" href="#src.CookBook.CookBook.find_recipes">find_recipes</a></code></li>
+<li><code><a title="src.CookBook.CookBook.loadAllRecipes" href="#src.CookBook.CookBook.loadAllRecipes">loadAllRecipes</a></code></li>
 <li><code><a title="src.CookBook.CookBook.loadFile" href="#src.CookBook.CookBook.loadFile">loadFile</a></code></li>
-<li><code><a title="src.CookBook.CookBook.printRecipes" href="#src.CookBook.CookBook.printRecipes">printRecipes</a></code></li>
 </ul>
 </li>
 </ul>

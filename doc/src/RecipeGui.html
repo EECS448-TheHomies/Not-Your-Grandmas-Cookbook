@@ -33,7 +33,9 @@ from datetime import datetime, timedelta
 
 from PySimpleGUI.PySimpleGUI import TabGroup
 from .Recipe import Recipe
-
+from .timergui import TimerGui
+import pytest
+import unittest
 
 class RecipeGui(object):
     &#34;&#34;&#34; The class that creates a GUI to display a recipe
@@ -49,7 +51,11 @@ class RecipeGui(object):
 
     def __init__(self, theme: str, recipeOBJ: Recipe):
         &#34;&#34;&#34;Sets up the options for the GUI
-        docstring
+        
+        Args:
+            theme (str): Theme of the window to be made.
+            recipeOBJ(str): The data structure containing the data that will be displace 
+
         &#34;&#34;&#34;
 
         self.titleFont = &#39;any 25&#39;
@@ -69,8 +75,8 @@ class RecipeGui(object):
         # sg.Print(do_not_reroute_stdout=False)
 
     def collapse(self, layout, key):
-        &#34;&#34;&#34;
-        Helper function that creates a Column that can be later made hidden, thus appearing &#34;collapsed&#34;. Modified from pysimpleGUI cookbook
+        &#34;&#34;&#34;Helper function that creates a Column that can be later made hidden, thus appearing &#34;collapsed&#34;. Modified from pysimpleGUI cookbook
+        
         Args:
             layout: The layout for the section
             key: Key used to make this seciton visible / invisible
@@ -99,8 +105,9 @@ class RecipeGui(object):
 
         # Defines the Ingredients framed element
         tree_ingredients = sg.TreeData()
+        # print(self.recipe.ingredients)
         for i in range(len(self.recipe.ingredients)):
-            print(self.recipe.ingredients[i])
+            # print(self.recipe.ingredients[i])
             tree_ingredients.Insert(
                 &#39;&#39;, str(i), self.recipe.ingredients[i][&#39;name&#39;], values=[self.recipe.ingredients[i][&#39;amount&#39;], self.recipe.ingredients[i][&#39;unit&#39;]])
 
@@ -110,7 +117,7 @@ class RecipeGui(object):
                      headings=[&#39;Amount&#39;, &#39;Unit&#39;],
                      #    auto_size_columns=True,
                      num_rows=5,
-                     col0_width=75,
+                     col0_width=67,
                      show_expanded=False,)],
             [sg.Text(&#39;_&#39;*(self.width-18), font=self.bodyFont)]
 
@@ -148,14 +155,13 @@ class RecipeGui(object):
         instructions_layout += [[sg.Text(&#39;_&#39; *
                                          (self.width-18), font=self.bodyFont)]]
 
-        # Defines the Instructions framed element
-        # instructions_layout = [
-        #     [sg.T(&#39;Text inside of a frame&#39;)],
-        #     [sg.CB(&#39;Check 1&#39;), sg.CB(&#39;Check 2&#39;)],
-        # ]
+        # New timer bar
+        button_layout = [[sg.Button(&#39;New Timer&#39;) , sg.Button(&#39;Print Ingredients&#39;)]]
+
 
         # This defines the layout of the main window
         layout = [[sg.Text(self.recipe.title, font=self.titleFont)]]
+        layout += button_layout
         layout += summary_layout
         layout += ingredients_layout
         layout += instructions_layout
@@ -164,37 +170,7 @@ class RecipeGui(object):
         # create the &#34;Window&#34;
         return sg.Window(self.recipe.title, layout, finalize=True)
 
-    def make_timer_gui(self) -&gt; sg.Window:
-        &#34;&#34;&#34;This function makes the GUI for the timer
 
-        Returns:
-            sg.Window: The timer window object
-        &#34;&#34;&#34;
-        layout = [
-            [sg.Text(&#39;Food timer:&#39;, font=(&#39;Arial&#39;, 20))],
-            [sg.Text(font=(&#39;Arial&#39;, 45), size=(10, 1),
-                     key=&#39;--time--&#39;, justification=&#39;center&#39;)],
-            [sg.Button(&#34;+5 min&#34;), sg.Button(&#34;+1 min&#34;), sg.Button(&#34;+30 sec&#34;), sg.VerticalSeparator() ,sg.Button(&#34;-5 min&#34;), sg.Button(&#34;-1 min&#34;), sg.Button(&#34;-30 sec&#34;)],
-            [sg.Button(&#39;Start&#39;),  sg.Button(&#39;Pause&#39;)]
-        ]
-       
-        self.time_count = datetime.now() + timedelta(minutes=5)
-        self.time_timr = True
-        return sg.Window(&#39;FOOD TIME!&#39;, layout, finalize=True)
-
-    def format_time(self, seconds:int)-&gt;str:
-        &#34;&#34;&#34; This is a helper function to format the timer
-        
-        Args: 
-            seconds (int): the time left on the timer
-
-        Returns:
-            str: the formatted string to display on the timer
-        &#34;&#34;&#34;
-        t_m, t_s = divmod(seconds, 60)
-        t_h, t_m = divmod(t_m, 60)
-        time_formated = str(t_h)+&#34;:&#34;+str(t_m)+&#34;:&#34;+str(t_s)
-        return time_formated
 
     def run(self):
         &#34;&#34;&#34; This function Runs the GUI
@@ -204,20 +180,27 @@ class RecipeGui(object):
         SYMBOL_UP = &#39;▲&#39;
         SYMBOL_DOWN = &#39;▼&#39;
 
-        time_window = self.make_timer_gui()
         rec_window = self.make_rec_gui()
 
+        timers = [] # the timer objects
+        timer_windows = [] 
 
         while True:
-            event, values = rec_window.read(timeout=100)
-            tw_event, tw_values = time_window.Read(timeout=100)
-            print(event)
-
+            
+            # Handle the recipe windows events
+            event, values = rec_window.read(timeout=100)            
 
             if event == sg.WIN_CLOSED or event == &#39;Close&#39;:  # if user closes window or clicks cancel
                 break
             elif event == &#39;New Timer&#39;:
-                print(&#34;Make a new Timer&#34;)
+                # print(&#34;Make a new Timer&#34;)
+                t = TimerGui(self.theme)
+                t.make_timer_gui()
+                timer_windows.append(t)
+            elif event == &#39;Print Ingredients&#39;:
+                outputFile = self.recipe.printIngredientsPDF()
+                sg.popup_ok(&#39;Your Grocery List is saved at: &#39; + outputFile)
+
 
             for step in range(len(self.list_col_instructions)):
                 if event == &#39;--Step:&#39;+str(step)+&#39;:SYM--&#39; or event == &#39;--Step:&#39;+str(step)+&#39;:TITLE--&#39;:
@@ -225,78 +208,33 @@ class RecipeGui(object):
                     if self.state_of_instructions[step]:
                         self.state_of_instructions[step] = False
 
-                        print(&#34;Hide Step &#34; + str(step))
+                        # print(&#34;Hide Step &#34; + str(step))
                         rec_window[&#39;--Step:&#39;+str(step)+&#39;:SYM--&#39;](SYMBOL_UP)
                         rec_window[&#39;--Step:&#39;+str(step)+&#39;:TEXT--&#39;](visible=False)
                         rec_window.Refresh()
 
                     else:
                         self.state_of_instructions[step] = True
-                        print(&#34;Expand Step &#34; + str(step))
+                        # print(&#34;Expand Step &#34; + str(step))
                         rec_window[&#39;--Step:&#39;+str(step)+&#39;:SYM--&#39;](SYMBOL_DOWN)
                         rec_window[&#39;--Step:&#39;+str(step)+&#39;:TEXT--&#39;](visible=True)
                         rec_window.Refresh()
-
-            if tw_event == &#39;Start&#39;:
-                self.time_timr = True
-                self.time_count = datetime.now() + self.timeLeft
-
-            elif tw_event == &#39;Pause&#39;:
-                self.time_timr = False
-                
-                print(self.timeLeft)
-
-
-
-            if  self.time_timr == True:         
-                if tw_event == &#39;+5 min&#39;:
-                    self.time_count += timedelta(minutes=5)
-
-                elif tw_event == &#39;+1 min&#39;:
-                    self.time_count += timedelta(minutes=1)
-
-                elif tw_event == &#39;+30 sec&#39;:
-                    self.time_count +=  timedelta(seconds=30)
-
-                elif tw_event == &#39;-5 min&#39;:
-                    self.time_count -=  timedelta(minutes=5)
-
-                elif tw_event == &#39;-1 min&#39;:
-                    self.time_count -=  timedelta(minutes=1)
-
-                elif tw_event == &#39;-30 sec&#39;:
-                    self.time_count -= timedelta(seconds=30)
-
-
-                self.timeLeft = self.time_count - datetime.now()
-                time_formated = self.format_time(self.timeLeft.seconds)
-                time_window[&#39;--time--&#39;](time_formated)
+            
             
 
-                print(self.time_count - datetime.now())
-            else:
-                if tw_event == &#39;+5 min&#39;:
-                    self.timeLeft += timedelta(minutes=5)
+            # Handle the timer windows 
+            for timer_window in timer_windows:
+                tw_event, _ = timer_window.gui.Read(timeout=100)
 
-                elif tw_event == &#39;+1 min&#39;:
-                    self.timeLeft += timedelta(minutes=1)
-
-                elif tw_event == &#39;+30 sec&#39;:
-                    self.timeLeft +=  timedelta(seconds=30)
-
-                elif tw_event == &#39;-5 min&#39;:
-                    self.timeLeft -=  timedelta(minutes=5)
-
-                elif tw_event == &#39;-1 min&#39;:
-                    self.timeLeft -=  timedelta(minutes=1)
-
-                elif tw_event == &#39;-30 sec&#39;:
-                    self.timeLeft -= timedelta(seconds=30)
-            
-                time_formated = self.format_time(self.timeLeft.seconds)
-                time_window[&#39;--time--&#39;](time_formated)
+                timer_window.event_handle(tw_event)
+        
+        
+        
+        
+        
         rec_window.close()
-        time_window.close()</code></pre>
+        for timer_window in timer_windows:
+            timer_window.close()</code></pre>
 </details>
 </section>
 <section>
@@ -327,8 +265,13 @@ class RecipeGui(object):
 </dl>
 <p>self.width (int): The width of the divider line
 self.recipe (recipe): the recipe object that will be displayed
-Sets up the options for the GUI
-docstring</p></div>
+Sets up the options for the GUI</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>theme</code></strong> :&ensp;<code>str</code></dt>
+<dd>Theme of the window to be made.</dd>
+</dl>
+<p>recipeOBJ(str): The data structure containing the data that will be displace</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -347,7 +290,11 @@ docstring</p></div>
 
     def __init__(self, theme: str, recipeOBJ: Recipe):
         &#34;&#34;&#34;Sets up the options for the GUI
-        docstring
+        
+        Args:
+            theme (str): Theme of the window to be made.
+            recipeOBJ(str): The data structure containing the data that will be displace 
+
         &#34;&#34;&#34;
 
         self.titleFont = &#39;any 25&#39;
@@ -367,8 +314,8 @@ docstring</p></div>
         # sg.Print(do_not_reroute_stdout=False)
 
     def collapse(self, layout, key):
-        &#34;&#34;&#34;
-        Helper function that creates a Column that can be later made hidden, thus appearing &#34;collapsed&#34;. Modified from pysimpleGUI cookbook
+        &#34;&#34;&#34;Helper function that creates a Column that can be later made hidden, thus appearing &#34;collapsed&#34;. Modified from pysimpleGUI cookbook
+        
         Args:
             layout: The layout for the section
             key: Key used to make this seciton visible / invisible
@@ -397,8 +344,9 @@ docstring</p></div>
 
         # Defines the Ingredients framed element
         tree_ingredients = sg.TreeData()
+        # print(self.recipe.ingredients)
         for i in range(len(self.recipe.ingredients)):
-            print(self.recipe.ingredients[i])
+            # print(self.recipe.ingredients[i])
             tree_ingredients.Insert(
                 &#39;&#39;, str(i), self.recipe.ingredients[i][&#39;name&#39;], values=[self.recipe.ingredients[i][&#39;amount&#39;], self.recipe.ingredients[i][&#39;unit&#39;]])
 
@@ -408,7 +356,7 @@ docstring</p></div>
                      headings=[&#39;Amount&#39;, &#39;Unit&#39;],
                      #    auto_size_columns=True,
                      num_rows=5,
-                     col0_width=75,
+                     col0_width=67,
                      show_expanded=False,)],
             [sg.Text(&#39;_&#39;*(self.width-18), font=self.bodyFont)]
 
@@ -446,14 +394,13 @@ docstring</p></div>
         instructions_layout += [[sg.Text(&#39;_&#39; *
                                          (self.width-18), font=self.bodyFont)]]
 
-        # Defines the Instructions framed element
-        # instructions_layout = [
-        #     [sg.T(&#39;Text inside of a frame&#39;)],
-        #     [sg.CB(&#39;Check 1&#39;), sg.CB(&#39;Check 2&#39;)],
-        # ]
+        # New timer bar
+        button_layout = [[sg.Button(&#39;New Timer&#39;) , sg.Button(&#39;Print Ingredients&#39;)]]
+
 
         # This defines the layout of the main window
         layout = [[sg.Text(self.recipe.title, font=self.titleFont)]]
+        layout += button_layout
         layout += summary_layout
         layout += ingredients_layout
         layout += instructions_layout
@@ -462,37 +409,7 @@ docstring</p></div>
         # create the &#34;Window&#34;
         return sg.Window(self.recipe.title, layout, finalize=True)
 
-    def make_timer_gui(self) -&gt; sg.Window:
-        &#34;&#34;&#34;This function makes the GUI for the timer
 
-        Returns:
-            sg.Window: The timer window object
-        &#34;&#34;&#34;
-        layout = [
-            [sg.Text(&#39;Food timer:&#39;, font=(&#39;Arial&#39;, 20))],
-            [sg.Text(font=(&#39;Arial&#39;, 45), size=(10, 1),
-                     key=&#39;--time--&#39;, justification=&#39;center&#39;)],
-            [sg.Button(&#34;+5 min&#34;), sg.Button(&#34;+1 min&#34;), sg.Button(&#34;+30 sec&#34;), sg.VerticalSeparator() ,sg.Button(&#34;-5 min&#34;), sg.Button(&#34;-1 min&#34;), sg.Button(&#34;-30 sec&#34;)],
-            [sg.Button(&#39;Start&#39;),  sg.Button(&#39;Pause&#39;)]
-        ]
-       
-        self.time_count = datetime.now() + timedelta(minutes=5)
-        self.time_timr = True
-        return sg.Window(&#39;FOOD TIME!&#39;, layout, finalize=True)
-
-    def format_time(self, seconds:int)-&gt;str:
-        &#34;&#34;&#34; This is a helper function to format the timer
-        
-        Args: 
-            seconds (int): the time left on the timer
-
-        Returns:
-            str: the formatted string to display on the timer
-        &#34;&#34;&#34;
-        t_m, t_s = divmod(seconds, 60)
-        t_h, t_m = divmod(t_m, 60)
-        time_formated = str(t_h)+&#34;:&#34;+str(t_m)+&#34;:&#34;+str(t_s)
-        return time_formated
 
     def run(self):
         &#34;&#34;&#34; This function Runs the GUI
@@ -502,20 +419,27 @@ docstring</p></div>
         SYMBOL_UP = &#39;▲&#39;
         SYMBOL_DOWN = &#39;▼&#39;
 
-        time_window = self.make_timer_gui()
         rec_window = self.make_rec_gui()
 
+        timers = [] # the timer objects
+        timer_windows = [] 
 
         while True:
-            event, values = rec_window.read(timeout=100)
-            tw_event, tw_values = time_window.Read(timeout=100)
-            print(event)
-
+            
+            # Handle the recipe windows events
+            event, values = rec_window.read(timeout=100)            
 
             if event == sg.WIN_CLOSED or event == &#39;Close&#39;:  # if user closes window or clicks cancel
                 break
             elif event == &#39;New Timer&#39;:
-                print(&#34;Make a new Timer&#34;)
+                # print(&#34;Make a new Timer&#34;)
+                t = TimerGui(self.theme)
+                t.make_timer_gui()
+                timer_windows.append(t)
+            elif event == &#39;Print Ingredients&#39;:
+                outputFile = self.recipe.printIngredientsPDF()
+                sg.popup_ok(&#39;Your Grocery List is saved at: &#39; + outputFile)
+
 
             for step in range(len(self.list_col_instructions)):
                 if event == &#39;--Step:&#39;+str(step)+&#39;:SYM--&#39; or event == &#39;--Step:&#39;+str(step)+&#39;:TITLE--&#39;:
@@ -523,78 +447,33 @@ docstring</p></div>
                     if self.state_of_instructions[step]:
                         self.state_of_instructions[step] = False
 
-                        print(&#34;Hide Step &#34; + str(step))
+                        # print(&#34;Hide Step &#34; + str(step))
                         rec_window[&#39;--Step:&#39;+str(step)+&#39;:SYM--&#39;](SYMBOL_UP)
                         rec_window[&#39;--Step:&#39;+str(step)+&#39;:TEXT--&#39;](visible=False)
                         rec_window.Refresh()
 
                     else:
                         self.state_of_instructions[step] = True
-                        print(&#34;Expand Step &#34; + str(step))
+                        # print(&#34;Expand Step &#34; + str(step))
                         rec_window[&#39;--Step:&#39;+str(step)+&#39;:SYM--&#39;](SYMBOL_DOWN)
                         rec_window[&#39;--Step:&#39;+str(step)+&#39;:TEXT--&#39;](visible=True)
                         rec_window.Refresh()
-
-            if tw_event == &#39;Start&#39;:
-                self.time_timr = True
-                self.time_count = datetime.now() + self.timeLeft
-
-            elif tw_event == &#39;Pause&#39;:
-                self.time_timr = False
-                
-                print(self.timeLeft)
-
-
-
-            if  self.time_timr == True:         
-                if tw_event == &#39;+5 min&#39;:
-                    self.time_count += timedelta(minutes=5)
-
-                elif tw_event == &#39;+1 min&#39;:
-                    self.time_count += timedelta(minutes=1)
-
-                elif tw_event == &#39;+30 sec&#39;:
-                    self.time_count +=  timedelta(seconds=30)
-
-                elif tw_event == &#39;-5 min&#39;:
-                    self.time_count -=  timedelta(minutes=5)
-
-                elif tw_event == &#39;-1 min&#39;:
-                    self.time_count -=  timedelta(minutes=1)
-
-                elif tw_event == &#39;-30 sec&#39;:
-                    self.time_count -= timedelta(seconds=30)
-
-
-                self.timeLeft = self.time_count - datetime.now()
-                time_formated = self.format_time(self.timeLeft.seconds)
-                time_window[&#39;--time--&#39;](time_formated)
+            
             
 
-                print(self.time_count - datetime.now())
-            else:
-                if tw_event == &#39;+5 min&#39;:
-                    self.timeLeft += timedelta(minutes=5)
+            # Handle the timer windows 
+            for timer_window in timer_windows:
+                tw_event, _ = timer_window.gui.Read(timeout=100)
 
-                elif tw_event == &#39;+1 min&#39;:
-                    self.timeLeft += timedelta(minutes=1)
-
-                elif tw_event == &#39;+30 sec&#39;:
-                    self.timeLeft +=  timedelta(seconds=30)
-
-                elif tw_event == &#39;-5 min&#39;:
-                    self.timeLeft -=  timedelta(minutes=5)
-
-                elif tw_event == &#39;-1 min&#39;:
-                    self.timeLeft -=  timedelta(minutes=1)
-
-                elif tw_event == &#39;-30 sec&#39;:
-                    self.timeLeft -= timedelta(seconds=30)
-            
-                time_formated = self.format_time(self.timeLeft.seconds)
-                time_window[&#39;--time--&#39;](time_formated)
+                timer_window.event_handle(tw_event)
+        
+        
+        
+        
+        
         rec_window.close()
-        time_window.close()</code></pre>
+        for timer_window in timer_windows:
+            timer_window.close()</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -617,8 +496,8 @@ docstring</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def collapse(self, layout, key):
-    &#34;&#34;&#34;
-    Helper function that creates a Column that can be later made hidden, thus appearing &#34;collapsed&#34;. Modified from pysimpleGUI cookbook
+    &#34;&#34;&#34;Helper function that creates a Column that can be later made hidden, thus appearing &#34;collapsed&#34;. Modified from pysimpleGUI cookbook
+    
     Args:
         layout: The layout for the section
         key: Key used to make this seciton visible / invisible
@@ -626,37 +505,6 @@ docstring</p></div>
         A pinned column that can be placed directly into your layout
     &#34;&#34;&#34;
     return sg.pin(sg.Column(layout, key=key, visible=False))</code></pre>
-</details>
-</dd>
-<dt id="src.RecipeGui.RecipeGui.format_time"><code class="name flex">
-<span>def <span class="ident">format_time</span></span>(<span>self, seconds: int) ‑> str</span>
-</code></dt>
-<dd>
-<div class="desc"><p>This is a helper function to format the timer</p>
-<p>Args:
-seconds (int): the time left on the timer</p>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>str</code></dt>
-<dd>the formatted string to display on the timer</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def format_time(self, seconds:int)-&gt;str:
-    &#34;&#34;&#34; This is a helper function to format the timer
-    
-    Args: 
-        seconds (int): the time left on the timer
-
-    Returns:
-        str: the formatted string to display on the timer
-    &#34;&#34;&#34;
-    t_m, t_s = divmod(seconds, 60)
-    t_h, t_m = divmod(t_m, 60)
-    time_formated = str(t_h)+&#34;:&#34;+str(t_m)+&#34;:&#34;+str(t_s)
-    return time_formated</code></pre>
 </details>
 </dd>
 <dt id="src.RecipeGui.RecipeGui.make_rec_gui"><code class="name flex">
@@ -693,8 +541,9 @@ seconds (int): the time left on the timer</p>
 
     # Defines the Ingredients framed element
     tree_ingredients = sg.TreeData()
+    # print(self.recipe.ingredients)
     for i in range(len(self.recipe.ingredients)):
-        print(self.recipe.ingredients[i])
+        # print(self.recipe.ingredients[i])
         tree_ingredients.Insert(
             &#39;&#39;, str(i), self.recipe.ingredients[i][&#39;name&#39;], values=[self.recipe.ingredients[i][&#39;amount&#39;], self.recipe.ingredients[i][&#39;unit&#39;]])
 
@@ -704,7 +553,7 @@ seconds (int): the time left on the timer</p>
                  headings=[&#39;Amount&#39;, &#39;Unit&#39;],
                  #    auto_size_columns=True,
                  num_rows=5,
-                 col0_width=75,
+                 col0_width=67,
                  show_expanded=False,)],
         [sg.Text(&#39;_&#39;*(self.width-18), font=self.bodyFont)]
 
@@ -742,14 +591,13 @@ seconds (int): the time left on the timer</p>
     instructions_layout += [[sg.Text(&#39;_&#39; *
                                      (self.width-18), font=self.bodyFont)]]
 
-    # Defines the Instructions framed element
-    # instructions_layout = [
-    #     [sg.T(&#39;Text inside of a frame&#39;)],
-    #     [sg.CB(&#39;Check 1&#39;), sg.CB(&#39;Check 2&#39;)],
-    # ]
+    # New timer bar
+    button_layout = [[sg.Button(&#39;New Timer&#39;) , sg.Button(&#39;Print Ingredients&#39;)]]
+
 
     # This defines the layout of the main window
     layout = [[sg.Text(self.recipe.title, font=self.titleFont)]]
+    layout += button_layout
     layout += summary_layout
     layout += ingredients_layout
     layout += instructions_layout
@@ -757,39 +605,6 @@ seconds (int): the time left on the timer</p>
 
     # create the &#34;Window&#34;
     return sg.Window(self.recipe.title, layout, finalize=True)</code></pre>
-</details>
-</dd>
-<dt id="src.RecipeGui.RecipeGui.make_timer_gui"><code class="name flex">
-<span>def <span class="ident">make_timer_gui</span></span>(<span>self) ‑> PySimpleGUI.PySimpleGUI.Window</span>
-</code></dt>
-<dd>
-<div class="desc"><p>This function makes the GUI for the timer</p>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>sg.Window</code></dt>
-<dd>The timer window object</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def make_timer_gui(self) -&gt; sg.Window:
-    &#34;&#34;&#34;This function makes the GUI for the timer
-
-    Returns:
-        sg.Window: The timer window object
-    &#34;&#34;&#34;
-    layout = [
-        [sg.Text(&#39;Food timer:&#39;, font=(&#39;Arial&#39;, 20))],
-        [sg.Text(font=(&#39;Arial&#39;, 45), size=(10, 1),
-                 key=&#39;--time--&#39;, justification=&#39;center&#39;)],
-        [sg.Button(&#34;+5 min&#34;), sg.Button(&#34;+1 min&#34;), sg.Button(&#34;+30 sec&#34;), sg.VerticalSeparator() ,sg.Button(&#34;-5 min&#34;), sg.Button(&#34;-1 min&#34;), sg.Button(&#34;-30 sec&#34;)],
-        [sg.Button(&#39;Start&#39;),  sg.Button(&#39;Pause&#39;)]
-    ]
-   
-    self.time_count = datetime.now() + timedelta(minutes=5)
-    self.time_timr = True
-    return sg.Window(&#39;FOOD TIME!&#39;, layout, finalize=True)</code></pre>
 </details>
 </dd>
 <dt id="src.RecipeGui.RecipeGui.run"><code class="name flex">
@@ -809,20 +624,27 @@ seconds (int): the time left on the timer</p>
     SYMBOL_UP = &#39;▲&#39;
     SYMBOL_DOWN = &#39;▼&#39;
 
-    time_window = self.make_timer_gui()
     rec_window = self.make_rec_gui()
 
+    timers = [] # the timer objects
+    timer_windows = [] 
 
     while True:
-        event, values = rec_window.read(timeout=100)
-        tw_event, tw_values = time_window.Read(timeout=100)
-        print(event)
-
+        
+        # Handle the recipe windows events
+        event, values = rec_window.read(timeout=100)            
 
         if event == sg.WIN_CLOSED or event == &#39;Close&#39;:  # if user closes window or clicks cancel
             break
         elif event == &#39;New Timer&#39;:
-            print(&#34;Make a new Timer&#34;)
+            # print(&#34;Make a new Timer&#34;)
+            t = TimerGui(self.theme)
+            t.make_timer_gui()
+            timer_windows.append(t)
+        elif event == &#39;Print Ingredients&#39;:
+            outputFile = self.recipe.printIngredientsPDF()
+            sg.popup_ok(&#39;Your Grocery List is saved at: &#39; + outputFile)
+
 
         for step in range(len(self.list_col_instructions)):
             if event == &#39;--Step:&#39;+str(step)+&#39;:SYM--&#39; or event == &#39;--Step:&#39;+str(step)+&#39;:TITLE--&#39;:
@@ -830,78 +652,33 @@ seconds (int): the time left on the timer</p>
                 if self.state_of_instructions[step]:
                     self.state_of_instructions[step] = False
 
-                    print(&#34;Hide Step &#34; + str(step))
+                    # print(&#34;Hide Step &#34; + str(step))
                     rec_window[&#39;--Step:&#39;+str(step)+&#39;:SYM--&#39;](SYMBOL_UP)
                     rec_window[&#39;--Step:&#39;+str(step)+&#39;:TEXT--&#39;](visible=False)
                     rec_window.Refresh()
 
                 else:
                     self.state_of_instructions[step] = True
-                    print(&#34;Expand Step &#34; + str(step))
+                    # print(&#34;Expand Step &#34; + str(step))
                     rec_window[&#39;--Step:&#39;+str(step)+&#39;:SYM--&#39;](SYMBOL_DOWN)
                     rec_window[&#39;--Step:&#39;+str(step)+&#39;:TEXT--&#39;](visible=True)
                     rec_window.Refresh()
-
-        if tw_event == &#39;Start&#39;:
-            self.time_timr = True
-            self.time_count = datetime.now() + self.timeLeft
-
-        elif tw_event == &#39;Pause&#39;:
-            self.time_timr = False
-            
-            print(self.timeLeft)
-
-
-
-        if  self.time_timr == True:         
-            if tw_event == &#39;+5 min&#39;:
-                self.time_count += timedelta(minutes=5)
-
-            elif tw_event == &#39;+1 min&#39;:
-                self.time_count += timedelta(minutes=1)
-
-            elif tw_event == &#39;+30 sec&#39;:
-                self.time_count +=  timedelta(seconds=30)
-
-            elif tw_event == &#39;-5 min&#39;:
-                self.time_count -=  timedelta(minutes=5)
-
-            elif tw_event == &#39;-1 min&#39;:
-                self.time_count -=  timedelta(minutes=1)
-
-            elif tw_event == &#39;-30 sec&#39;:
-                self.time_count -= timedelta(seconds=30)
-
-
-            self.timeLeft = self.time_count - datetime.now()
-            time_formated = self.format_time(self.timeLeft.seconds)
-            time_window[&#39;--time--&#39;](time_formated)
+        
         
 
-            print(self.time_count - datetime.now())
-        else:
-            if tw_event == &#39;+5 min&#39;:
-                self.timeLeft += timedelta(minutes=5)
+        # Handle the timer windows 
+        for timer_window in timer_windows:
+            tw_event, _ = timer_window.gui.Read(timeout=100)
 
-            elif tw_event == &#39;+1 min&#39;:
-                self.timeLeft += timedelta(minutes=1)
-
-            elif tw_event == &#39;+30 sec&#39;:
-                self.timeLeft +=  timedelta(seconds=30)
-
-            elif tw_event == &#39;-5 min&#39;:
-                self.timeLeft -=  timedelta(minutes=5)
-
-            elif tw_event == &#39;-1 min&#39;:
-                self.timeLeft -=  timedelta(minutes=1)
-
-            elif tw_event == &#39;-30 sec&#39;:
-                self.timeLeft -= timedelta(seconds=30)
-        
-            time_formated = self.format_time(self.timeLeft.seconds)
-            time_window[&#39;--time--&#39;](time_formated)
+            timer_window.event_handle(tw_event)
+    
+    
+    
+    
+    
     rec_window.close()
-    time_window.close()</code></pre>
+    for timer_window in timer_windows:
+        timer_window.close()</code></pre>
 </details>
 </dd>
 </dl>
@@ -926,9 +703,7 @@ seconds (int): the time left on the timer</p>
 <h4><code><a title="src.RecipeGui.RecipeGui" href="#src.RecipeGui.RecipeGui">RecipeGui</a></code></h4>
 <ul class="">
 <li><code><a title="src.RecipeGui.RecipeGui.collapse" href="#src.RecipeGui.RecipeGui.collapse">collapse</a></code></li>
-<li><code><a title="src.RecipeGui.RecipeGui.format_time" href="#src.RecipeGui.RecipeGui.format_time">format_time</a></code></li>
 <li><code><a title="src.RecipeGui.RecipeGui.make_rec_gui" href="#src.RecipeGui.RecipeGui.make_rec_gui">make_rec_gui</a></code></li>
-<li><code><a title="src.RecipeGui.RecipeGui.make_timer_gui" href="#src.RecipeGui.RecipeGui.make_timer_gui">make_timer_gui</a></code></li>
 <li><code><a title="src.RecipeGui.RecipeGui.run" href="#src.RecipeGui.RecipeGui.run">run</a></code></li>
 </ul>
 </li>
