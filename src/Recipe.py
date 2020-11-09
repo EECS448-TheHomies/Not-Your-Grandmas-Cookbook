@@ -107,18 +107,38 @@ class Recipe:
         pdf.ln()
 
         pdf.set_font("Arial", size=14)
-
-        for i in range(len(self.ingredients)):
+        print("In pdf")
+        print(self.ingredients)
+        # for i in range(len(self.ingredients)):
+        #     print(self.ingredients[i])
             
-            pdf.cell(w=4,h=5,border=1)
-            pdf.write(6,self.ingredients[i]['name'] + ":\t" +self.ingredients[i]['amount'] + " " +  self.ingredients[i]['unit'])
+        #     pdf.cell(w=4,h=5,border=1)
+        #     print("1")
 
+        #     ing_string = self.ingredients[i]['name'] + ":\t" +self.ingredients[i]['amount'] + " " +  self.ingredients[i]['unit']
+        #     print(ing_string)
+        #     pdf.write(6,ing_string)
+        #     print("2")
+        #     # pdf.write(6,str(self.ingredients[i]))
+        #     pdf.ln()
+        #     print("3")
+
+        for item in self.ingredients:
+            pdf.cell(w=4,h=5,border=1)
+            print(1)
+            ing_string = f"{item['name']}:\t{item['amount']} {item['unit']}"
+            #  item['name'] + ":\t" +item['amount'] + " " +  item['unit']
+            print(ing_string)
+            pdf.write(6,ing_string)
+            print("2")
             # pdf.write(6,str(self.ingredients[i]))
             pdf.ln()
+            print("3")
 
         if not os.path.isdir(self.groceryListDir):
             os.makedirs(self.groceryListDir)
         outputFile = self.groceryListDir+"\\"+self.title+" Grocery List.pdf"
+        print(outputFile)
         pdf.output(outputFile)
         return outputFile
 
