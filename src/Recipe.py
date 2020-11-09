@@ -52,7 +52,7 @@ class Recipe:
         self.id = yml['id']
         self.time = yml['readyInMinutes']
         self.servings = yml['servings']
-        # self.sourceName = yml['sourceName']
+        self.sourceName = yml['sourceName']
         self.URL = yml['sourceUrl']
         self.image = yml['image']
         soup = BeautifulSoup(yml['summary'], features='html.parser')                    # the BeautifulSoup library removes HTML tags from text

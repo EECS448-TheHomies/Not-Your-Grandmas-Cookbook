@@ -27,7 +27,7 @@ class MainGUI(object):
         
         self.cookbook = CookBook()
         
-        self.cookbook.remove_APIrecipes
+        self.cookbook.remove_APIrecipes()
         self.cookbook.loadAllRecipes()
 
 
@@ -65,6 +65,10 @@ class MainGUI(object):
             tmpTitle = rec.title.casefold()
             if filter == '' or filter  in tmpTitle:
                 namesOfRecipes.append(rec.title) 
+        # Dedublicate the list
+        namesOfRecipes = list(set(namesOfRecipes))
+        
+        print(namesOfRecipes)
 
         return namesOfRecipes
 

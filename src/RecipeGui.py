@@ -77,7 +77,7 @@ class RecipeGui(object):
         print(self.recipe.URL)
         print(self.recipe.sourceName)
         source_layout = [
-            [sg.Text('Source', font=self.sectionFont, enable_events=True)],
+            [sg.Text('Source', font=self.subSectionFont, enable_events=True)],
             [sg.T(self.recipe.sourceName +": "+ self.recipe.URL, font=self.bodyFont)],
             [sg.Text('_'*(self.width-18), font=self.bodyFont)]
         ]
@@ -142,9 +142,9 @@ class RecipeGui(object):
         layout = [[sg.Text(self.recipe.title, font=self.titleFont)]]
         layout += button_layout
         layout += summary_layout
-        layout += source_layout
         layout += ingredients_layout
         layout += instructions_layout
+        layout += source_layout
         layout += [[sg.Button('Close')]]
 
         # create the "Window"
