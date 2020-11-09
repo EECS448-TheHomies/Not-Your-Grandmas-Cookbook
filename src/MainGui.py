@@ -1,6 +1,7 @@
 import PySimpleGUI as sg
 import os
 from RecipeGui import RecipeGui
+import subprocess
 
 from CookBook import CookBook
 from Recipe import Recipe
@@ -72,6 +73,15 @@ class MainGUI(object):
 
         return namesOfRecipes
 
+    def run_tests(self):
+        """
+        docstring
+        """
+        sg.Print(do_not_reroute_stdout=False)
+        pytest_results = subprocess.run(["pytest"], stdout=subprocess.PIPE)
+        print(pytest_results.stdout.decode('utf-8'))
+        sg.Print(do_not_reroute_stdout=True)
+
     def run(self):
         """Method that runs the GUI
         """
@@ -116,9 +126,7 @@ class MainGUI(object):
             if event == sg.WIN_CLOSED or event == 'Exit':  # if user closes window or clicks cancel
                 break
             elif event == 'Test Functionality':
-                sg.Print(do_not_reroute_stdout=False)
-                os.system("pytest")
-                sg.Print(do_not_reroute_stdout=True)
+                self.run_tests()
 
             elif event == '-local-':
                 self.local = True
